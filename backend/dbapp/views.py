@@ -24,12 +24,17 @@ def create_user(request):
 
 @api_view(['POST'])
 def login(request):
-    user = get_object_or_404(User, username=request.data['username'])
-    if not user.check_password(request.data['password']):
-        return Response("missing user", status=status.HTTP_404_NOT_FOUND)
-    token, created = Token.objects.get_or_create(user=user)
-    serializer = UserSerializer(user)
-    return Response({'token': token.key, 'user': serializer.data})
+    cursor = connection.cursor()
+    types = ['DBManager', 'Player', 'Coach', 'Jury']
+    for user_type in types:
+        user = cursor.execute("SELECT * FROM " + user_type + " WHERE username = %s AND password = %s", [request.data['username'], request.data['password']])
+        if user:
+            break
+    if not user:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    user = cursor.fetchone()
+    return Response({'user': user[0], "type": user_type})
 
 @api_view(['GET'])
 def get_players(request):
