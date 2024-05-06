@@ -30,3 +30,10 @@ def login(request):
     token, created = Token.objects.get_or_create(user=user)
     serializer = UserSerializer(user)
     return Response({'token': token.key, 'user': serializer.data})
+
+@api_view(['GET'])
+def get_players(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM Player")
+    players = cursor.fetchall()
+    return Response({'players': players})

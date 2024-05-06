@@ -25,6 +25,16 @@ const loginFormSchema = z.object({
 
 
 export default function Home() {
+    useEffect(() => {
+        axios.get(`http://localhost:8000/api/get-players/`)
+            .then(function (response) {
+                console.log(response.data.players);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, [])
+
     const { checkAuth, login } = useAuth()
     const isAuth = checkAuth()
     const navigate = useNavigate()
