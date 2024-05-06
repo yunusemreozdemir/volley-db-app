@@ -54,7 +54,11 @@ export default function Home() {
           .then(function (response) {
             loginForm.reset();
             //login(response.data);
-            //navigate('/feed');
+            if (response.data.type == "DBManager")
+                navigate('/ManagerPage');
+            else
+                navigate('/UserPage');
+            
           })
           .catch(function (error) {
             console.log(error);
