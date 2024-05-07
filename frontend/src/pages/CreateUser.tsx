@@ -19,10 +19,13 @@ import { Calendar } from "@/components/ui/calendar"
 const createUserSchema = z.object({
     username: z.string().min(2).max(50),
     password: z.string().min(2).max(50),
+    name: z.string().min(2).max(50),
+    surname: z.string().min(2).max(50),
     date_of_birth: z.date(),
     height: z.coerce.number(),
     weight: z.coerce.number(),
     nationality: z.string().min(2).max(50),
+    usertype: z.string().min(2).max(50),
   })
 
 export default function CreateUser() {
@@ -34,10 +37,13 @@ export default function CreateUser() {
         defaultValues: {
             username: "",
             password: "",
+            name: "",
+            surname: "",
             date_of_birth: new Date(),
             height: 0,
             weight: 0,
             nationality: "",
+            usertype: "Player"
         },
     })
 
@@ -60,10 +66,13 @@ export default function CreateUser() {
                 <form onSubmit={createUserForm.handleSubmit(onCreateUserSubmit)} className="space-y-2">
                 {FormBlock("Username","username")}
                 {FormBlock("Password","password")}
+                {FormBlock("Name","name")}
+                {FormBlock("Surname","surname")}
                 {FormBlock("Date of Birth","date_of_birth")}
                 {FormBlock("Height","height")}
                 {FormBlock("Weight","weight")}
                 {FormBlock("Nationality","nationality")}
+                {FormBlock("User Type","usertype")}
                 <FormItem>
                     <Button type="submit">Create</Button>
                 </FormItem>

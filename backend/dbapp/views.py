@@ -5,21 +5,36 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from datetime import datetime
 
 from .serializers import UserSerializer
 
 
 @api_view(['POST'])
 def create_user(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        user = User.objects.get(username=request.data['username'])
-        user.set_password(request.data['password'])
-        user.save()
-        token = Token.objects.create(user=user)
-        return Response({'token': token.key, 'user': serializer.data})
-    return Response(serializer.errors, status=status.HTTP_200_OK)
+    data = request.data
+    usertype = data['usertype']        
+    username = data['username']
+    password = data['password']
+    name = data['name']
+    surname = data['surname']
+    cursor = connection.cursor()
+    if usertype == "Player":
+        date_of_birth = data['date_of_birth']
+        date_of_birth = datetime.strptime(date_of_birth[:10], '%Y-%m-%d').strftime('%d/%m/%Y')
+        height = data['height']
+        weight = data['weight']
+        cursor.execute("INSERT INTO Player (username, password, name, surname, date_of_birth, height, weight) VALUES (%s, %s, %s, %s, %s, %s, %s)", [username, password, name, surname, date_of_birth, height, weight])
+    elif usertype == "Coach":
+        nationality = data['nationality']
+        cursor.execute("INSERT INTO Coach (username, password, name, surname,  nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
+    elif usertype == "Jury":
+        nationality = data['nationality']
+        cursor.execute("INSERT INTO Jury (username, password, nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname,  nationality])
+    else:
+        return Response({'error': 'Invalid user type'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(request.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
