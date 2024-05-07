@@ -61,6 +61,12 @@ def update_stadium(request):
     print(cursor.rowcount)
     return Response("Stadium not found" if cursor.rowcount == 0 else f"{cursor.rowcount} stadium names changed.", status=status.HTTP_200_OK)
     
+@api_view(['GET'])
+def get_stadiums(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT DISTINCT stadium_name, stadium_country, stadium_ID FROM MatchSession")
+    stadiums = cursor.fetchall()
+    return Response({'stadiums': stadiums})
 
 @api_view(['GET'])
 def get_players(request):
