@@ -51,6 +51,16 @@ def login(request):
     user = cursor.fetchone()
     return Response({'user': user[0], "type": user_type})
 
+@api_view(['POST'])
+def update_stadium(request):
+    data = request.data
+    previous_name = data['previous_name']
+    name = data['name']
+    cursor = connection.cursor()
+    cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_name = %s", [name, previous_name])
+    return Response(request.data, status=status.HTTP_200_OK)
+    
+
 @api_view(['GET'])
 def get_players(request):
     cursor = connection.cursor()
