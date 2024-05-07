@@ -1,19 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import axios from 'axios';
-import { useAuth } from '../hooks'
+import { useNavigate } from 'react-router-dom'
+
 
 import { Button } from "@/components/ui/button"
 
 export default function ManagerPage () {
-    //const { checkAuth, login } = useAuth()
-    // const isAuth = checkAuth()
     const navigate = useNavigate()
-
-    // if (!isAuth) return <Navigate to="/" />
 
     return (
         <div>

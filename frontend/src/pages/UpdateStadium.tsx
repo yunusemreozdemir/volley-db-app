@@ -7,6 +7,7 @@ export default function UpdateStadium() {
         const form = new FormData(event.target);
         axios.post(`http://localhost:8000/api/update-stadium/`, form)
             .then(function (response) {
+                // TODO display this message in the frontend
                 console.log(response);
             })
             .catch(function (error) {

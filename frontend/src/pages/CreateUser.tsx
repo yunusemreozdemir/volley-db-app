@@ -51,6 +51,7 @@ export default function CreateUser() {
         console.log(values);
         axios.post(`http://localhost:8000/api/create-user/`, values)
           .then(function (response) {
+            console.log(response);
             createUserForm.reset();
             navigate('/ManagerPage');
           })

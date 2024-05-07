@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { typesafeBrowserRouter } from 'react-router-typesafe';
-import { Home, ManagerPage, CreateUser, UpdateStadium } from './pages/index'
+import { Home, ManagerPage, CreateUser, UpdateStadium, CoachPage } from './pages/index'
 import './index.css'
 
 const { router, href } = typesafeBrowserRouter([
@@ -23,6 +23,10 @@ const { router, href } = typesafeBrowserRouter([
     Component: UpdateStadium
   
   },
+  {
+    path: "/CoachPage",
+    Component: CoachPage
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

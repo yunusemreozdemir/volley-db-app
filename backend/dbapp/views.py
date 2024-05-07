@@ -58,7 +58,8 @@ def update_stadium(request):
     name = data['name']
     cursor = connection.cursor()
     cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_name = %s", [name, previous_name])
-    return Response(request.data, status=status.HTTP_200_OK)
+    print(cursor.rowcount)
+    return Response("Stadium not found" if cursor.rowcount == 0 else f"{cursor.rowcount} stadium names changed.", status=status.HTTP_200_OK)
     
 
 @api_view(['GET'])

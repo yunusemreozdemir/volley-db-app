@@ -56,8 +56,12 @@ export default function Home() {
             //login(response.data);
             if (response.data.type == "DBManager")
                 navigate('/ManagerPage');
+            else if (response.data.type == "Coach")
+                navigate('/CoachPage');
+            else if (response.data.type == "Jury")
+                navigate('/JuryPage');
             else
-                navigate('/UserPage');
+                navigate('/PlayerPage');
             
           })
           .catch(function (error) {
