@@ -19,6 +19,11 @@ def create_user(request):
     name = data['name']
     surname = data['surname']
     cursor = connection.cursor()
+    for user_type in ['DBManager', 'Player', 'Coach', 'Jury']:
+        user = cursor.execute("SELECT * FROM " + user_type + " WHERE username = %s", [username])
+        if user:
+            return Response({'error': 'Username already exists'}, status=status.HTTP_409_CONFLICT)
+
     if usertype == "Player":
         date_of_birth = data['date_of_birth']
         date_of_birth = datetime.strptime(date_of_birth[:10], '%Y-%m-%d').strftime('%d/%m/%Y')
