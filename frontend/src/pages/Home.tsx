@@ -53,7 +53,7 @@ export default function Home() {
         axios.post(`http://localhost:8000/api/login/`, values)
           .then(function (response) {
             loginForm.reset();
-            //login(response.data);
+            login(response.data);
             if (response.data.type == "DBManager")
                 navigate('/DBManager');
             else if (response.data.type == "Coach")
