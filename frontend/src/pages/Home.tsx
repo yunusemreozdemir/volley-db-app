@@ -55,13 +55,13 @@ export default function Home() {
             loginForm.reset();
             //login(response.data);
             if (response.data.type == "DBManager")
-                navigate('/ManagerPage');
+                navigate('/DBManager');
             else if (response.data.type == "Coach")
-                navigate('/CoachPage');
+                navigate('/Coach');
             else if (response.data.type == "Jury")
-                navigate('/JuryPage');
+                navigate('/Jury');
             else
-                navigate('/PlayerPage');
+                navigate('/Player');
             
           })
           .catch(function (error) {
