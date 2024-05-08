@@ -1,6 +1,7 @@
 export { default as Home } from './Home'
 export { default as DBManager } from './DBManager'
-export { default as CoachPage } from './CoachPage'
+export { default as Coach } from './Coach'
+export { default as DeleteMatchSession } from './DeleteMatchSession'
 export { default as AddMatchSession } from './AddMatchSession'
 export { default as CreateSquad } from './CreateSquad'
 export { default as ViewStadiums } from './ViewStadiums'
