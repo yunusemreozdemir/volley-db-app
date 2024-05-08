@@ -54,7 +54,7 @@ def login(request):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
     user = cursor.fetchone()
-    return Response({'user': user[0], "type": user_type})
+    return Response({'user': user, "type": user_type})
 
 @api_view(['POST'])
 def update_stadium(request):
@@ -72,6 +72,17 @@ def get_stadiums(request):
     cursor.execute("SELECT DISTINCT stadium_name, stadium_country, stadium_ID FROM MatchSession")
     stadiums = cursor.fetchall()
     return Response({'stadiums': stadiums})
+
+@api_view(['POST'])
+def delete_match_session(request):
+    cursor = connection.cursor()
+    try:
+        session_ID = request.data['session_ID']
+        cursor.execute("DELETE FROM MatchSession WHERE session_ID = %s", [session_ID])
+        cursor.execute("DELETE FROM SessionSquads WHERE session_ID = %s", [session_ID])
+        return Response("Match session deleted", status=status.HTTP_200_OK)
+    except:
+        return Response("Match session not found", status=status.HTTP_404_NOT_FOUND)
 
 # TODO this function expects a date in the format 'dd.mm.yyyy', currently it uses current date.
 @api_view(['POST'])
