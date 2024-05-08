@@ -98,6 +98,32 @@ def add_match_session(request):
     return Response("Match session added", status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def view_rating_stats(request):
+    data = request.data
+    jury_username = data['jury_username']
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT AVG(rating), COUNT(rating) FROM MatchSession WHERE assigned_jury_username = "{jury_username}" AND rating IS NOT NULL')
+    rating, count = cursor.fetchone()
+    if count == 0:
+        return Response("No ratings found", status=status.HTTP_404_NOT_FOUND)
+    return Response({'average_rating': rating, "rating_count": count})
+
+
+@api_view(["POST"])
+def rate_match_session(request):
+    data = request.data
+    session_id = data['session_id']
+    rating = data['rating']
+    if rating < 0 or rating > 5:
+        return Response("Rating must be between 0 and 5", status=status.HTTP_400_BAD_REQUEST)
+    jury_username = data['jury_username']
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT COUNT(*) FROM MatchSession WHERE session_ID = {session_id} AND assigned_jury_username = "{jury_username}"')
+    if cursor.fetchone()[0] == 0:
+        return Response("Match session not found or unassigned jury", status=status.HTTP_404_NOT_FOUND)
+    cursor.execute(f'UPDATE MatchSession SET rating = {rating} WHERE session_ID = {session_id}')
+    return Response("Match session rated", status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
