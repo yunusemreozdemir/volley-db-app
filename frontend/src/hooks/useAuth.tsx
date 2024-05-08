@@ -1,22 +1,19 @@
-import axios from 'axios'
 import { isEmpty } from 'lodash-es'
 
 function getAuthUser() {
-  const jwt = window.localStorage.getItem('jwtTokenDB')
+  const user = window.localStorage.getItem('userInfo')
 
-  if (!jwt) return {}
+  if (!user) return {}
 
-  return JSON.parse(atob(jwt))
+  return JSON.parse(atob(user))
 }
 
 const actions = {
   login: (user) => {
-    window.localStorage.setItem('jwtTokenDB', btoa(JSON.stringify(user)))
-
-    axios.defaults.headers.Authorization = `Token ${user.token}`
+    window.localStorage.setItem('userInfo', btoa(JSON.stringify(user)))
   },
   logout: () => {
-    window.localStorage.removeItem('jwtTokenDB')
+    window.localStorage.removeItem('userInfo')
   },
   checkAuth: () => {
     const authUser = getAuthUser()
@@ -28,6 +25,9 @@ const actions = {
         return true
     }
   },
+  getAuth: () => {
+    return getAuthUser()
+  }
 }
 
 function useAuth() {
