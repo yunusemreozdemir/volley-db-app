@@ -1,7 +1,5 @@
 export { default as Home } from './Home'
-export { default as ManagerPage } from './ManagerPage'
-export { default as CreateUser } from './CreateUser'
-export { default as UpdateStadium } from './UpdateStadium'
+export { default as DBManager } from './DBManager'
 export { default as CoachPage } from './CoachPage'
 export { default as AddMatchSession } from './AddMatchSession'
 export { default as CreateSquad } from './CreateSquad'
