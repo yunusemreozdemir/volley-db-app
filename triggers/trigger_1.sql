@@ -9,11 +9,12 @@ BEGIN
 	DECLARE m_count INT;
     
     SELECT COUNT(*) INTO m_count
-    FROM SESSIONS
+    FROM MatchSession
     WHERE (time_slot = NEW.time_slot OR
     time_slot = NEW.time_slot + 1 OR
     time_slot - 1 = NEW.time_slot) AND
-    stadium_ID = NEW.stadium_ID;
+    stadium_ID = NEW.stadium_ID AND 
+    date = NEW.date;
     
 	IF m_count > 0 THEN
         SIGNAL SQLSTATE '45000' 

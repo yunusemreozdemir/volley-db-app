@@ -73,6 +73,33 @@ def get_stadiums(request):
     stadiums = cursor.fetchall()
     return Response({'stadiums': stadiums})
 
+# TODO this function expects a date in the format 'dd.mm.yyyy', currently it uses current date.
+@api_view(['POST'])
+def add_match_session(request):
+    data = request.data
+    coach_username = data['coach_username']
+    stadium_id = data['stadium_id']
+    date = data['date']
+    time_slot = data['time_slot']
+    assigned_jury_username = data['assigned_jury_username']
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(session_ID) FROM MatchSession")
+    session_id = cursor.fetchone()[0] + 1
+    current_date = datetime.now().strftime('%d.%m.%Y')
+    print(current_date)
+    cursor.execute(f'SELECT team_ID FROM Team WHERE coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{current_date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{current_date}", "%d.%m.%Y")')
+    team_id = cursor.fetchone()[0]
+    cursor.execute(f"SELECT DISTINCT stadium_name, stadium_country FROM MatchSession WHERE stadium_ID = {stadium_id}")
+    stadium_name, stadium_country = cursor.fetchone()
+    cursor.execute(f'SELECT COUNT(*) FROM Jury WHERE username = "{assigned_jury_username}"')
+    if cursor.fetchone()[0] == 0:
+        return Response("Jury not found", status=status.HTTP_404_NOT_FOUND)
+    cursor.execute(f'INSERT INTO MatchSession (session_ID, team_ID, stadium_ID, stadium_name, stadium_country, time_slot, date, assigned_jury_username, rating) VALUES ({session_id}, {team_id}, {stadium_id}, "{stadium_name}", "{stadium_country}", {time_slot}, "{current_date}", "{assigned_jury_username}", NULL)')
+    return Response("Match session added", status=status.HTTP_200_OK)
+
+
+
+
 @api_view(['GET'])
 def get_players(request):
     cursor = connection.cursor()

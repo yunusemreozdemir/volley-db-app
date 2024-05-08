@@ -10,10 +10,10 @@ BEGIN
     DECLARE m_count INT;
     
     SELECT COUNT(*) INTO m_count
-    FROM Stadium
+    FROM MatchSession
     WHERE (stadium_ID = NEW.stadium_ID) AND (stadium_name != NEW.stadium_name or stadium_country != NEW.stadium_country);
     
-    IF m_count = 0 THEN
+    IF m_count > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Stadium integrity violation';
     END IF;
