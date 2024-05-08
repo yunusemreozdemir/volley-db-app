@@ -62,7 +62,6 @@ export default function CreateUser() {
 
     return (
         <div>
-            <h1>Create User</h1>
             <Form {...createUserForm}>
                 <form onSubmit={createUserForm.handleSubmit(onCreateUserSubmit)} className="space-y-2">
                 {FormBlock("Username","username")}
