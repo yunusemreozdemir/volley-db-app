@@ -125,6 +125,29 @@ def rate_match_session(request):
     cursor.execute(f'UPDATE MatchSession SET rating = {rating} WHERE session_ID = {session_id}')
     return Response("Match session rated", status=status.HTTP_200_OK)
 
+# TODO displaying max_together separately in frontend might be cool
+@api_view(['POST'])
+def view_players(request):
+    data = request.data
+    player_username = data['player_username']
+    cursor = connection.cursor()
+    cursor.execute(f"""SELECT name, surname, height, COUNT(*) 
+                   FROM SessionSquads S 
+                   INNER JOIN Player P ON S.played_player_username = P.username 
+                   WHERE played_player_username != "{player_username}" AND session_ID IN 
+                        (SELECT session_ID 
+                        FROM SessionSquads 
+                        WHERE played_player_username = "{player_username}")
+                   GROUP BY username""")
+    players = cursor.fetchall()
+    max_together = max(players, key=lambda x: x[3])[3]
+    max_together = [x for x in players if x[3] == max_together]
+    print([x[2] for x in max_together ])
+    avg_height = sum([x[2] for x in max_together ]) / len(max_together)
+    
+    print(players, avg_height, max_together)
+    return Response({'players': players, "avg_height": avg_height, "max_together": max_together})
+
 
 @api_view(['GET'])
 def get_players(request):

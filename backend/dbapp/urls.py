@@ -10,4 +10,5 @@ urlpatterns = [
     path('add-match-session/', views.add_match_session, name='add-match-session'),
     path('view-rating-stats/', views.view_rating_stats, name='view-rating-stats'),
     path('rate-match-session/', views.rate_match_session, name='rate-match-session'),
+    path('view-players/', views.view_players, name='view-players'),
 ]
