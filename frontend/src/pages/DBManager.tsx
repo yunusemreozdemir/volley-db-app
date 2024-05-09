@@ -5,6 +5,8 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import React, { useState } from 'react';
 import axios from 'axios';
 
+import {Input} from '@/components/ui/input'
+
 export default function DBManager () {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
@@ -46,21 +48,21 @@ export default function DBManager () {
                             <button className={activeTab === "Jury" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1"} onClick={() => setActiveTab('Jury')}>Jury</button>
                             <button className={activeTab === "Player" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1"} onClick={() => setActiveTab('Player')}>Player</button>
                         </div>
-                        <input placeholder="Username" value={createData.username} onChange={(e) => setCreateData((prev) => {return { ...prev, username: e.target.value}})}/>
-                        <input placeholder="Password" value={createData.password} onChange={(e) => setCreateData((prev) => {return { ...prev, password: e.target.value}})}/>
-                        <input placeholder="Name" value={createData.name} onChange={(e) => setCreateData((prev) => {return { ...prev, name: e.target.value}})}/>
-                        <input placeholder="Surname" value={createData.surname} onChange={(e) => setCreateData((prev) => {return { ...prev, surname: e.target.value}})}/>
+                        <Input placeholder="Username" value={createData.username} onChange={(e) => setCreateData((prev) => {return { ...prev, username: e.target.value}})}/>
+                        <Input placeholder="Password" value={createData.password} onChange={(e) => setCreateData((prev) => {return { ...prev, password: e.target.value}})}/>
+                        <Input placeholder="Name" value={createData.name} onChange={(e) => setCreateData((prev) => {return { ...prev, name: e.target.value}})}/>
+                        <Input placeholder="Surname" value={createData.surname} onChange={(e) => setCreateData((prev) => {return { ...prev, surname: e.target.value}})}/>
                         {
                             (activeTab === "Coach" || activeTab === "Jury") && (
-                                <input placeholder="Nationality" value={createData.nationality} onChange={(e) => setCreateData((prev) => {return { ...prev, nationality: e.target.value}})}/>
+                                <Input placeholder="Nationality" value={createData.nationality} onChange={(e) => setCreateData((prev) => {return { ...prev, nationality: e.target.value}})}/>
                             )
                         }
                         {
                             activeTab === "Player" && (
                                 <>
-                                    <input placeholder="Date of Birth" value={createData.date_of_birth} onChange={(e) => setCreateData((prev) => {return { ...prev, date_of_birth: e.target.value}})}/>
-                                    <input placeholder="Height" value={createData.height} onChange={(e) => setCreateData((prev) => {return { ...prev, height: e.target.value}})}/>
-                                    <input placeholder="Weight" value={createData.weight} onChange={(e) => setCreateData((prev) => {return { ...prev, weight: e.target.value}})}/>
+                                    <Input placeholder="Date of Birth" value={createData.date_of_birth} onChange={(e) => setCreateData((prev) => {return { ...prev, date_of_birth: e.target.value}})}/>
+                                    <Input placeholder="Height" value={createData.height} onChange={(e) => setCreateData((prev) => {return { ...prev, height: e.target.value}})}/>
+                                    <Input placeholder="Weight" value={createData.weight} onChange={(e) => setCreateData((prev) => {return { ...prev, weight: e.target.value}})}/>
                                 </>
                             )
                         }
@@ -79,8 +81,8 @@ export default function DBManager () {
                     <div className="flex-[30%] rounded-md shadow-sm border p-5 flex flex-col gap-2 h-min">
                         <h1 className="text-2xl font-bold">Update Stadium</h1>
                         <div className="flex flex-col gap-2 w-full">
-                            <input placeholder="Previous Name" value={updateData.previous_name} onChange={(e) => setUpdateData((prev) => {return { ...prev, previous_name: e.target.value}})}/>
-                            <input placeholder="New Name" value={updateData.name} onChange={(e) => setUpdateData((prev) => {return { ...prev, name: e.target.value}})}/>
+                            <Input placeholder="Previous Name" className="border rounded-md py-1 px-2" value={updateData.previous_name} onChange={(e) => setUpdateData((prev) => {return { ...prev, previous_name: e.target.value}})}/>
+                            <Input placeholder="New Name" value={updateData.name} onChange={(e) => setUpdateData((prev) => {return { ...prev, name: e.target.value}})}/>
                             <Button className="w-full bg-zinc-900" onClick={
                                 () => {
                                     axios.post(`http://localhost:8000/api/update-stadium/`, {previous_name: updateData.previous_name, name: updateData.name})

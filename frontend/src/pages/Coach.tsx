@@ -4,6 +4,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import React, { useState } from 'react';
 import axios from 'axios';
 
+import {Input} from '@/components/ui/input'
 
 export default function Coach () {
     const navigate = useNavigate()
@@ -50,12 +51,12 @@ export default function Coach () {
                         {
                             activeTab === 'addMatchSession' && (
                                 <div>
-                                    <input placeholder='Stadium Name' className='border' value={addTabState.stadiumName} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumName: e.target.value}})}/>
-                                    <input placeholder='Stadium Country' className='border' value={addTabState.stadiumCountry} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumCountry: e.target.value}})}/>
-                                    <input placeholder='Date' className='border' value={addTabState.date} onChange={(e) => setAddTabState((prev) => {return { ...prev, date: e.target.value}})}/>
-                                    <input placeholder='Time Slot' className='border' value={addTabState.timeSlot} onChange={(e) => setAddTabState((prev) => {return { ...prev, timeSlot: e.target.value}})}/>
-                                    <input placeholder='Jury Name' className='border' value={addTabState.juryName} onChange={(e) => setAddTabState((prev) => {return { ...prev, juryName: e.target.value}})}/>
-                                    <input placeholder='Jury Surname' className='border' value={addTabState.jurySurname} onChange={(e) => setAddTabState((prev) => {return { ...prev, jurySurname: e.target.value}})}/>
+                                    <Input placeholder='Stadium Name' className='border' value={addTabState.stadiumName} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumName: e.target.value}})}/>
+                                    <Input placeholder='Stadium Country' className='border' value={addTabState.stadiumCountry} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumCountry: e.target.value}})}/>
+                                    <Input placeholder='Date' className='border' value={addTabState.date} onChange={(e) => setAddTabState((prev) => {return { ...prev, date: e.target.value}})}/>
+                                    <Input placeholder='Time Slot' className='border' value={addTabState.timeSlot} onChange={(e) => setAddTabState((prev) => {return { ...prev, timeSlot: e.target.value}})}/>
+                                    <Input placeholder='Jury Name' className='border' value={addTabState.juryName} onChange={(e) => setAddTabState((prev) => {return { ...prev, juryName: e.target.value}})}/>
+                                    <Input placeholder='Jury Surname' className='border' value={addTabState.jurySurname} onChange={(e) => setAddTabState((prev) => {return { ...prev, jurySurname: e.target.value}})}/>
                                     <button onClick={() => {
                                         axios.post(`http://localhost:8000/api/add-match-session/`, {
                                             "coach_username": user.user[0],
@@ -80,7 +81,7 @@ export default function Coach () {
                         {
                             activeTab === 'deleteMatchSession' && (
                                 <div>
-                                    <input placeholder='Session ID' className='' value={deleteTabState} onChange={(e) => setDeleteTabState(e.target.value)}/>
+                                    <Input placeholder='Session ID' className='' value={deleteTabState} onChange={(e) => setDeleteTabState(e.target.value)}/>
                                     <button onClick={() => {
                                         axios.post(`http://localhost:8000/api/delete-match-session/`, {"session_ID": deleteTabState})
                                         .then(function (response) {
@@ -97,8 +98,8 @@ export default function Coach () {
                             activeTab === 'createSquad' && (
                                 <div>
                                     <div className="flex flex-col">
-                                    <input className="border" placeholder='Session ID'/>
-                                    <input className="border" placeholder="Enter play usernames" value={createTabState.inputValue} onKeyDown={
+                                    <Input className="border" placeholder='Session ID'/>
+                                    <Input className="border" placeholder="Enter play usernames" value={createTabState.inputValue} onKeyDown={
                                         (event: React.KeyboardEvent<HTMLInputElement>) => {
                                             if (event.key === 'Enter') {
                                                 setCreateTabState((prev) => {return { usernames: [...prev.usernames, prev.inputValue], inputValue: ''}})

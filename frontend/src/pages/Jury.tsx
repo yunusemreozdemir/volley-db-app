@@ -4,6 +4,8 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import {Input} from '@/components/ui/input'
+
 export default function Jury() {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
@@ -54,8 +56,8 @@ export default function Jury() {
                         {
                             activeTab === 'rate' && (
                                 <div>
-                                    <input placeholder='Session ID' className='border' value={rateTabState.sessionID} onChange={(e) => setRateTabState((prev) => {return { ...prev, sessionID: e.target.value}})}/>
-                                    <input placeholder='Rating' className='border' value={rateTabState.rating} onChange={(e) => setRateTabState((prev) => {return { ...prev, rating: e.target.value}})}/>
+                                    <Input placeholder='Session ID' className='border' value={rateTabState.sessionID} onChange={(e) => setRateTabState((prev) => {return { ...prev, sessionID: e.target.value}})}/>
+                                    <Input placeholder='Rating' className='border' value={rateTabState.rating} onChange={(e) => setRateTabState((prev) => {return { ...prev, rating: e.target.value}})}/>
                                     <button onClick={() => {
                                         axios.post(`http://localhost:8000/api/rate-match-session/`, {
                                             session_id: rateTabState.sessionID,
