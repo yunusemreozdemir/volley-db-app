@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 import {Input} from '@/components/ui/input'
+import { Button } from "@/components/ui/button"
 
 export default function Coach () {
     const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function Coach () {
 
     const [activeTab, setActiveTab] = React.useState('addMatchSession')
 
-    const [addTabState, setAddTabState] = React.useState({stadiumName: "", stadiumCountry: "", date: "", timeSlot: "", juryName: "", jurySurname: ""})
+    const [addTabState, setAddTabState] = React.useState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""})
     const [deleteTabState, setDeleteTabState] = React.useState('')
     const [createTabState, setCreateTabState] = React.useState({ usernames: [], inputValue: ""})
     const [viewTabState, setViewTabState] = React.useState([])
@@ -25,13 +26,13 @@ export default function Coach () {
 
     return (
         <div className='h-screen w-screen flex flex-col'>
-            <div className='flex-initial flex flex-row justify-between bg-zinc-900 text-white py-3 px-5'>
+            <div className='flex-initial flex flex-row justify-between bg-zinc-900 text-white py-3 px-5 items-center'>
                 <h1 className='text-xl'>Coach</h1>
-                <div className='flex flex-row bg-zinc-300 p-1 text-base gap-1 rounded-sm text-zinc-800'>
-                    <button className={activeTab === "addMatchSession" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => setActiveTab('addMatchSession')}>Add Match Session</button>
-                    <button className={activeTab === "deleteMatchSession" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => setActiveTab('deleteMatchSession')}>Delete Match Session</button>
-                    <button className={activeTab === "createSquad" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => setActiveTab('createSquad')}>Create Squad</button>
-                    <button className={activeTab === "viewStadiums" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => {
+                <div className='flex flex-row bg-zinc-700 p-1 text-base gap-1 rounded-sm text-white whitespace-nowrap'>
+                    <button className={activeTab === "addMatchSession" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('addMatchSession')}>Add Match Session</button>
+                    <button className={activeTab === "deleteMatchSession" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('deleteMatchSession')}>Delete Match Session</button>
+                    <button className={activeTab === "createSquad" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('createSquad')}>Create Squad</button>
+                    <button className={activeTab === "viewStadiums" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => {
                         setActiveTab('viewStadiums'); 
                         axios.get(`http://localhost:8000/api/get-stadiums/`)
                             .then(function (response) {
@@ -50,31 +51,27 @@ export default function Coach () {
                     <div className='shadow-sm rounded-md border p-7'>
                         {
                             activeTab === 'addMatchSession' && (
-                                <div>
-                                    <Input placeholder='Stadium Name' className='border' value={addTabState.stadiumName} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumName: e.target.value}})}/>
-                                    <Input placeholder='Stadium Country' className='border' value={addTabState.stadiumCountry} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadiumCountry: e.target.value}})}/>
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className="text-2xl font-bold">Add Match Session</h1>
+                                    <Input placeholder='Stadium Name' className='border' value={addTabState.stadium_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_name: e.target.value}})}/>
+                                    <Input placeholder='Stadium Country' className='border' value={addTabState.stadium_country} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_country: e.target.value}})}/>
                                     <Input placeholder='Date' className='border' value={addTabState.date} onChange={(e) => setAddTabState((prev) => {return { ...prev, date: e.target.value}})}/>
-                                    <Input placeholder='Time Slot' className='border' value={addTabState.timeSlot} onChange={(e) => setAddTabState((prev) => {return { ...prev, timeSlot: e.target.value}})}/>
-                                    <Input placeholder='Jury Name' className='border' value={addTabState.juryName} onChange={(e) => setAddTabState((prev) => {return { ...prev, juryName: e.target.value}})}/>
-                                    <Input placeholder='Jury Surname' className='border' value={addTabState.jurySurname} onChange={(e) => setAddTabState((prev) => {return { ...prev, jurySurname: e.target.value}})}/>
-                                    <button onClick={() => {
+                                    <Input placeholder='Time Slot' className='border' value={addTabState.time_slot} onChange={(e) => setAddTabState((prev) => {return { ...prev, time_slot: e.target.value}})}/>
+                                    <Input placeholder='Jury Name' className='border' value={addTabState.assigned_jury_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_name: e.target.value}})}/>
+                                    <Input placeholder='Jury Surname' className='border' value={addTabState.assigned_jury_surname} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_surname: e.target.value}})}/>
+                                    <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/add-match-session/`, {
+                                            ...addTabState,
                                             "coach_username": user.user[0],
-                                            "stadium_name": addTabState.stadiumName,
-                                            "stadium_country": addTabState.stadiumCountry,
-                                            "date": addTabState.date,
-                                            "time_slot": addTabState.timeSlot,
-                                            "jury_name": addTabState.juryName,
-                                            "jury_surname": addTabState.jurySurname
                                         
                                         })
                                         .then(function (response) {
-                                            setAddTabState({stadiumName: "", stadiumCountry: "", date: "", timeSlot: "", juryName: "", jurySurname: ""});
+                                            setAddTabState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""});
                                         })
                                         .catch(function (error) {
                                           console.log(error);
                                         }); 
-                                    }}>Add</button>
+                                    }}>Add</Button>
                                 </div>
                             )
                         }

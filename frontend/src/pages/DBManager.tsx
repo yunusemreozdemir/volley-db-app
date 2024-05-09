@@ -44,9 +44,9 @@ export default function DBManager () {
                     <div className="flex-[70%] rounded-md shadow-sm border p-5 flex flex-col gap-2">
                         <h1 className="text-2xl font-bold">Create User</h1>
                         <div className='flex flex-row bg-zinc-100 p-1 text-base gap-1 rounded-sm text-zinc-800'>
-                            <button className={activeTab === "Coach" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1"} onClick={() => setActiveTab('Coach')}>Coach</button>
-                            <button className={activeTab === "Jury" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1"} onClick={() => setActiveTab('Jury')}>Jury</button>
-                            <button className={activeTab === "Player" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1"} onClick={() => setActiveTab('Player')}>Player</button>
+                            <button className={activeTab === "Coach" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-500"} onClick={() => setActiveTab('Coach')}>Coach</button>
+                            <button className={activeTab === "Jury" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-500"} onClick={() => setActiveTab('Jury')}>Jury</button>
+                            <button className={activeTab === "Player" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-500"} onClick={() => setActiveTab('Player')}>Player</button>
                         </div>
                         <Input placeholder="Username" value={createData.username} onChange={(e) => setCreateData((prev) => {return { ...prev, username: e.target.value}})}/>
                         <Input placeholder="Password" value={createData.password} onChange={(e) => setCreateData((prev) => {return { ...prev, password: e.target.value}})}/>

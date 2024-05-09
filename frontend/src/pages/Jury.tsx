@@ -32,13 +32,13 @@ export default function Jury() {
 
     return (
         <div className='h-screen w-screen flex flex-col'>
-            <div className='flex-initial flex flex-row justify-between bg-zinc-900 text-white py-3 px-5'>
+            <div className='flex-initial flex flex-row justify-between bg-zinc-900 text-white py-3 px-5 items-center'>
                 <h1 className='text-xl'>Jury</h1>
-                <div className='flex flex-row bg-zinc-300 p-1 text-base gap-1 rounded-sm text-zinc-800'>
-                    <button className={activeTab === "stats" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => {
+                <div className='flex flex-row bg-zinc-700 p-1 text-base gap-1 rounded-sm text-white w-3/12'>
+                    <button className={activeTab === "stats" ? "bg-zinc-900 rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-400"} onClick={() => {
                         setActiveTab('stats');
                     }}>Stats</button>
-                    <button className={activeTab === "rate" ? "bg-white rounded-sm px-4" : "px-4"} onClick={() => setActiveTab('rate')}>Rate</button>
+                    <button className={activeTab === "rate" ? "bg-zinc-900 rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-400"} onClick={() => setActiveTab('rate')}>Rate</button>
                 </div>
                 <button onClick={() => {logout(); navigate('/')}}><LogoutOutlinedIcon className='text-2xl'/></button>
             </div>
