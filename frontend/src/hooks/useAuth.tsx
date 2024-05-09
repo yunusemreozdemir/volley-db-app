@@ -5,12 +5,12 @@ function getAuthUser() {
 
   if (!user) return {}
 
-  return JSON.parse(atob(user))
+  return JSON.parse(user)
 }
 
 const actions = {
   login: (user) => {
-    window.localStorage.setItem('userInfo', btoa(JSON.stringify(user)))
+    window.localStorage.setItem('userInfo', JSON.stringify(user))
   },
   logout: () => {
     window.localStorage.removeItem('userInfo')
