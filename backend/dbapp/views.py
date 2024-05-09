@@ -149,6 +149,59 @@ def add_match_session(request):
     cursor.execute(f'INSERT INTO MatchSession (session_ID, team_ID, stadium_ID, stadium_name, stadium_country, time_slot, date, assigned_jury_username, rating) VALUES ({session_id}, {team_id}, {stadium_id}, "{stadium_name}", "{stadium_country}", {time_slot}, "{date}", "{assigned_jury_username}", NULL)')
     return Response("Match session added", status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def create_squad(request):
+    data = request.data
+    print(data)
+    coach_username = data['coach_username']
+    if not coach_username:
+        return Response("No coach username provided", status=status.HTTP_400_BAD_REQUEST)
+    session_id = data['session_id']
+    if not session_id:
+        return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
+    players = data['players']
+    if not players:
+        return Response("No players in squad", status=status.HTTP_400_BAD_REQUEST)
+    if len(players) != 6:
+        return Response("Squad must have 6 players", status=status.HTTP_400_BAD_REQUEST)
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT * FROM MatchSession WHERE session_ID = {session_id}')
+    session = cursor.fetchone()
+    if not session:
+        return Response("Session not found", status=status.HTTP_404_NOT_FOUND)
+    team_id = session[1]
+    date = session[6]
+    time_slot = session[5]
+    cursor.execute(f'SELECT * FROM Team WHERE team_ID = {team_id} AND coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{date}", "%d.%m.%Y")')
+    if not cursor.fetchone():
+        return Response("Coach team mismatch", status=status.HTTP_400_BAD_REQUEST)
+    cursor.execute(f'SELECT * FROM SessionSquads WHERE session_ID = {session_id}')
+    if cursor.fetchone():
+        return Response("Squad already exists", status=status.HTTP_400_BAD_REQUEST)
+    
+    for player in players:
+        cursor.execute(f'SELECT * FROM Player WHERE TRIM(name) = "{player["name"].strip()}"')
+        player_data = cursor.fetchone()
+        if not player_data:
+            print(player)
+            return Response("Player not found", status=status.HTTP_404_NOT_FOUND)
+        cursor.execute(f'SELECT * FROM PlayerTeams WHERE username = "{player_data[0]}" AND team = {team_id}')
+        if not cursor.fetchone():
+            return Response("Player not in team", status=status.HTTP_400_BAD_REQUEST)
+        cursor.execute(f'SELECT * FROM PlayerPositions WHERE username = "{player_data[0]}" AND position = {player["position"]}')
+        if not cursor.fetchone():
+            return Response("Player position mismatch", status=status.HTTP_400_BAD_REQUEST)
+        cursor.execute(f'SELECT * FROM MatchSession WHERE STR_TO_DATE(date, "%d.%m.%Y") = STR_TO_DATE("{date}", "%d.%m.%Y") AND (time_slot = {time_slot} OR time_slot = {time_slot} + 1 OR time_slot = {time_slot} - 1) AND session_ID IN (SELECT session_ID FROM SessionSquads WHERE played_player_username = "{player_data[0]}")')
+        if cursor.fetchone():
+            return Response("Player already played in a session", status=status.HTTP_400_BAD_REQUEST)
+    for player in players:
+        cursor.execute(f'SELECT username FROM Player WHERE TRIM(name) = "{player["name"].strip()}"')
+        username = cursor.fetchone()[0]
+        cursor.execute(f'SELECT MAX(squad_ID) FROM SessionSquads')
+        squad_id = cursor.fetchone()[0] + 1
+        cursor.execute(f'INSERT INTO SessionSquads (squad_ID, session_ID, played_player_username, position_ID) VALUES ({squad_id}, {session_id}, "{username}", {player["position"]})')
+    return Response("Squad created", status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def view_rating_stats(request):
