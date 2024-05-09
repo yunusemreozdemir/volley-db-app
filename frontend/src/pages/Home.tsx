@@ -35,11 +35,22 @@ export default function Home() {
             });
     }, [])
 
-    const { checkAuth, login } = useAuth()
+    const { checkAuth, login, getAuth } = useAuth()
     const isAuth = checkAuth()
+
     const navigate = useNavigate()
 
-    if (isAuth) return <Navigate to="/Feed" />
+    if (isAuth) {
+        const user = getAuth()
+        if (user.type == "DBManager")
+            return <Navigate to="/dbmanager" />
+        else if (user.type == "Coach")
+            return <Navigate to="/coach" />
+        else if (user.type == "Jury")
+            return <Navigate to="/jury" />
+        else
+            return <Navigate to="/player" />
+    }
 
     const loginForm = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
@@ -55,13 +66,13 @@ export default function Home() {
             loginForm.reset();
             login(response.data);
             if (response.data.type == "DBManager")
-                navigate('/DBManager');
+                navigate('/dbManager');
             else if (response.data.type == "Coach")
-                navigate('/Coach');
+                navigate('/coach');
             else if (response.data.type == "Jury")
-                navigate('/Jury');
+                navigate('/jury');
             else
-                navigate('/Player');
+                navigate('/player');
             
           })
           .catch(function (error) {
