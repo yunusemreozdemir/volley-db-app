@@ -219,14 +219,24 @@ def view_rating_stats(request):
 def rate_match_session(request):
     data = request.data
     session_id = data['session_id']
+    if not session_id:
+        return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
     rating = data['rating']
+    if not rating:
+        return Response("No rating provided", status=status.HTTP_400_BAD_REQUEST)
     if rating < 0 or rating > 5:
         return Response("Rating must be between 0 and 5", status=status.HTTP_400_BAD_REQUEST)
     jury_username = data['jury_username']
     cursor = connection.cursor()
-    cursor.execute(f'SELECT COUNT(*) FROM MatchSession WHERE session_ID = {session_id} AND assigned_jury_username = "{jury_username}"')
-    if cursor.fetchone()[0] == 0:
-        return Response("Match session not found or unassigned jury", status=status.HTTP_404_NOT_FOUND)
+    cursor.execute(f'SELECT * FROM MatchSession WHERE session_ID = {session_id}')
+    session = cursor.fetchone()
+    if not session:
+        return Response("Match session not found", status=status.HTTP_404_NOT_FOUND)
+    assigned_jury_username, rated = session[7], session[8]
+    if assigned_jury_username != jury_username:
+        return Response("Unauthorized jury", status=status.HTTP_401_UNAUTHORIZED)
+    if rated:
+        return Response("Match session already rated", status=status.HTTP_400_BAD_REQUEST)
     cursor.execute(f'UPDATE MatchSession SET rating = {rating} WHERE session_ID = {session_id}')
     return Response("Match session rated", status=status.HTTP_200_OK)
 
@@ -261,8 +271,7 @@ def view_players(request):
                         WHERE played_player_username = "{player_username}")
 		            GROUP BY username)) AS H""")
     avg_height = cursor.fetchone()[0]
-    
-    return Response({'players': players, "avg_height": avg_height})
+    return Response({"avg_height": avg_height, "players": sorted(players, key=lambda x: x[3], reverse=True)})
 
 
 @api_view(['GET'])
