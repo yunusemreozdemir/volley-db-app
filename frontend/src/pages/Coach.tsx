@@ -6,6 +6,16 @@ import axios from 'axios';
 
 import {Input} from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "@/components/ui/table"
 
 export default function Coach () {
     const navigate = useNavigate()
@@ -128,16 +138,22 @@ export default function Coach () {
                         {
                             activeTab === 'viewStadiums' && (
                                 <div>
-                                    <ul>
-                                        {viewTabState.map((stadium) => (
-                                            <li key={stadium[0]}>
-                                                <div className='flex flex-row justify-between gap-5'>
-                                                    <p>{stadium[0]}</p>
-                                                    <p>{stadium[1]}</p>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                            <TableHead className="w-[100px]">Stadium</TableHead>
+                                            <TableHead className="text-right">Country</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {viewTabState.map((stadium) => (
+                                            <TableRow key={stadium[0]}>
+                                                <TableCell className="font-medium whitespace-nowrap">{stadium[0]}</TableCell>
+                                                <TableCell className="text-right">{stadium[1]}</TableCell>
+                                            </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 </div>
                             )
                         }

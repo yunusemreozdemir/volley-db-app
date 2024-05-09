@@ -4,6 +4,19 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import {Input} from '@/components/ui/input'
+import { Button } from "@/components/ui/button"
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "@/components/ui/table"
+
 export default function Player() {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
@@ -34,22 +47,32 @@ export default function Player() {
                 <button onClick={() => {logout(); navigate('/')}}><LogoutOutlinedIcon className='text-2xl'/></button>
             </div>
             <div className='h-full w-full flex-auto flex justify-center'>
-                <div className='flex flex-col justify-center'>
+                <div className='flex flex-col justify-center gap-2'>
+                    <div className='shadow-sm rounded-md border p-7'>
+                        <div>{`Average height of most played players: ${avgHeight}`}</div>
+                    </div>
                     <div className='shadow-sm rounded-md border p-7'>
                         <div>
-                            <div>{`Average height of most played players: ${avgHeight}`}</div>
-                            <ul>
-                                {players.map((player) => (
-                                    <li key={`${player[0]}${player[1]}${player[2]}${player[3]}`}>
-                                        <div className='flex flex-row justify-between gap-5'>
-                                            <p>{player[0]}</p>
-                                            <p>{player[1]}</p>
-                                            <p>{player[2]}</p>
-                                            <p>{player[3]}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                    <TableHead className="w-[100px]">Name</TableHead>
+                                    <TableHead>Surname</TableHead>
+                                    <TableHead>Height</TableHead>
+                                    <TableHead className="text-right">Times Played</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {players.map((player) => (
+                                    <TableRow key={`${player[0]}${player[1]}${player[2]}${player[3]}`}>
+                                        <TableCell className="font-medium">{player[0]}</TableCell>
+                                        <TableCell>{player[1]}</TableCell>
+                                        <TableCell>{player[2]}</TableCell>
+                                        <TableCell className="text-right">{player[3]}</TableCell>
+                                    </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </div>
