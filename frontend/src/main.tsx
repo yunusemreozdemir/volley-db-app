@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { typesafeBrowserRouter } from 'react-router-typesafe';
-import { Home, DBManager, Coach, DeleteMatchSession, AddMatchSession, CreateSquad, ViewStadiums } from './pages/index'
+import { Home, DBManager, Coach, Jury, Player } from './pages/index'
 import './index.css'
 
 const { router, href } = typesafeBrowserRouter([
@@ -15,24 +15,16 @@ const { router, href } = typesafeBrowserRouter([
     Component: DBManager
   },
   {
-    path: "/Coach",
+    path: "/coach",
     Component: Coach
   },
   {
-    path: "/DeleteMatchSession",
-    Component: DeleteMatchSession
+    path: "/jury",
+    Component: Jury
   },
   {
-    path: "/AddMatchSession",
-    Component: AddMatchSession
-  },
-  {
-    path: "/CreateSquad",
-    Component: CreateSquad
-  },
-  {
-    path: "/ViewStadiums",
-    Component: ViewStadiums
+    path: "/player",
+    Component: Player
   }
 ]);
 
