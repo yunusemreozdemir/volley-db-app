@@ -132,8 +132,13 @@ def add_match_session(request):
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(session_ID) FROM MatchSession")
     session_id = cursor.fetchone()[0] + 1
-    cursor.execute("SELECT MAX(stadium_ID) FROM MatchSession")
-    stadium_id = cursor.fetchone()[0] + 1
+    cursor.execute("SELECT DISTINCT stadium_ID FROM MatchSession WHERE stadium_name = %s", [stadium_name])
+    stadium = cursor.fetchone()
+    if not stadium:
+        cursor.execute("SELECT MAX(stadium_ID) FROM MatchSession")
+        stadium_id = cursor.fetchone()[0] + 1
+    else:
+        stadium_id = stadium[0]
     cursor.execute(f'SELECT team_ID FROM Team WHERE coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{date}", "%d.%m.%Y")')
     team_id = cursor.fetchone()[0]
     cursor.execute(f'SELECT * FROM Jury WHERE name = "{assigned_jury_name}" AND surname = "{assigned_jury_surname}"')
