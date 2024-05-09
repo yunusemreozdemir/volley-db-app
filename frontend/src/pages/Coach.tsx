@@ -20,7 +20,7 @@ export default function Coach () {
 
     const [addTabState, setAddTabState] = React.useState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""})
     const [deleteTabState, setDeleteTabState] = React.useState('')
-    const [createTabState, setCreateTabState] = React.useState({ usernames: [], inputValue: ""})
+    const [createTabState, setCreateTabState] = React.useState({ players: [], nameInputValue: "", positionInputValue: "", session_id: ""})
     const [viewTabState, setViewTabState] = React.useState([])
  
 
@@ -77,9 +77,10 @@ export default function Coach () {
                         }
                         {
                             activeTab === 'deleteMatchSession' && (
-                                <div>
+                                <div className='flex flex-col gap-2'>
+                                    <h1 className="text-2xl font-bold">Delete Match Session</h1>
                                     <Input placeholder='Session ID' className='' value={deleteTabState} onChange={(e) => setDeleteTabState(e.target.value)}/>
-                                    <button onClick={() => {
+                                    <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/delete-match-session/`, {"session_ID": deleteTabState})
                                         .then(function (response) {
                                             setDeleteTabState('');
@@ -87,37 +88,40 @@ export default function Coach () {
                                         .catch(function (error) {
                                           console.log(error);
                                         }); 
-                                    }}>Delete</button>
+                                    }}>Delete</Button>
                                 </div>
                             )
                         }
                         {
                             activeTab === 'createSquad' && (
-                                <div>
-                                    <div className="flex flex-col">
-                                    <Input className="border" placeholder='Session ID'/>
-                                    <Input className="border" placeholder="Enter play usernames" value={createTabState.inputValue} onKeyDown={
-                                        (event: React.KeyboardEvent<HTMLInputElement>) => {
-                                            if (event.key === 'Enter') {
-                                                setCreateTabState((prev) => {return { usernames: [...prev.usernames, prev.inputValue], inputValue: ''}})
-                                            }
-                                        }
-                                    } onChange={(e) => setCreateTabState((prev) => {return { ...prev, inputValue: e.target.value}})} />
+                                <div className="flex flex-col gap-2">
+                                    <h1 className="text-2xl font-bold">Create Squad</h1>
+                                    <div className="flex flex-col gap-2">
+                                    <Input className="border" placeholder='Session ID' value={createTabState.session_id} onChange={(e) => setCreateTabState((prev) => {return { ...prev, session_id: e.target.value}})}/>
+                                    <div className='flex flex-row gap-2'>
+                                        <Input className="border" placeholder="Player Name" value={createTabState.nameInputValue} onChange={(e) => setCreateTabState((prev) => {return { ...prev, nameInputValue: e.target.value}})} />
+                                        <Input className="border" placeholder="Position" value={createTabState.positionInputValue} onChange={(e) => setCreateTabState((prev) => {return { ...prev, positionInputValue: e.target.value}})} />
+                                        <Button onClick={() => {
+                                            setCreateTabState((prev) => {
+                                                return { ...prev, players: [...prev.players, {name: prev.nameInputValue, position: prev.positionInputValue}], nameInputValue: '', positionInputValue: ''}
+                                            })
+                                        }}>Add</Button>
                                     </div>
-                                    <ul>
-                                        {createTabState.usernames.map((username) => (
-                                            <li key={username}>{username}</li>
+                                    </div>
+                                    <ul className='flex flex-col gap-1'>
+                                        {createTabState.players.map((player) => (
+                                            <li key={player.name}>{player.name + " - " + player.position}</li>
                                         ))}
                                     </ul>
-                                    <button onClick={() => {
-                                        axios.post(`http://localhost:8000/api/create-squad/`, {"session_ID": deleteTabState})
+                                    <Button onClick={() => {
+                                        axios.post(`http://localhost:8000/api/create-squad/`, {session_id: createTabState.session_id, players: createTabState.players, coach_username: user.user[0]})
                                         .then(function (response) {
-                                            setDeleteTabState({ usernames: [], inputValue: ""});
+                                            setCreateTabState({ players: [], nameInputValue: '', positionInputValue: "", session_id: ''});
                                         })
                                         .catch(function (error) {
                                           console.log(error);
                                         }); 
-                                    }}>Create</button>
+                                    }}>Create</Button>
                                 </div>
                             )
                         }
