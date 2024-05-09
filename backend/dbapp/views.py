@@ -49,7 +49,6 @@ def create_user(request):
 
     if usertype == "Player":
         date_of_birth = data['date_of_birth']
-        date_of_birth = datetime.strptime(date_of_birth[:10], '%Y-%m-%d').strftime('%d/%m/%Y')
         height = data['height']
         weight = data['weight']
         team_ids = data['team_ids']
@@ -58,19 +57,27 @@ def create_user(request):
         for team_id in set(team_ids):
             cursor.execute("SELECT MAX(player_teams_id) FROM PlayerTeams")
             player_teams_id = cursor.fetchone()[0] + 1
-            cursor.execute(f'INSERT INTO PlayerTeams (player_teams_id, username, team_ID) VALUES ({player_teams_id}, "{username}", {team_id})')
+            cursor.execute(f'INSERT INTO PlayerTeams (player_teams_id, username, team) VALUES ({player_teams_id}, "{username}", {team_id})')
         for position_id in set(position_ids):
             cursor.execute("SELECT MAX(player_positions_id) FROM PlayerPositions")
             player_positions_id = cursor.fetchone()[0] + 1
-            cursor.execute(f'INSERT INTO PlayerPositions (player_positions_id, username, position_ID) VALUES ({player_positions_id}, "{username}", {position_id})')
+            cursor.execute(f'INSERT INTO PlayerPositions (player_positions_id, username, position) VALUES ({player_positions_id}, "{username}", {position_id})')
 
     elif usertype == "Coach":
         nationality = data['nationality']
+        team_name = data['team_name']
+        contract_start = data['contract_start']
+        contract_finish = data['contract_finish']
         cursor.execute("INSERT INTO Coach (username, password, name, surname,  nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
+        cursor.execute("SELECT MAX(team_ID) FROM Team")
+        team_id = cursor.fetchone()[0] + 1
+        cursor.execute(f"SELECT * FROM Team WHERE team_name = " + f"'{team_name}'")
+        team = cursor.fetchone()
+        cursor.execute("INSERT INTO Team (team_ID, team_name, coach_username, contract_start, contract_finish, channel_id, channel_name) VALUES (%s, %s, %s, %s, %s, %s, %s)", [team_id, team_name, username, contract_start, contract_finish, team[5], team[6]])
         
     elif usertype == "Jury":
         nationality = data['nationality']
-        cursor.execute("INSERT INTO Jury (username, password, nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname,  nationality])
+        cursor.execute("INSERT INTO Jury (username, password, name, surname, nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
     else:
         return Response({'error': 'Invalid user type'}, status=status.HTTP_400_BAD_REQUEST)
     
