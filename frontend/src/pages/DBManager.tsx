@@ -26,12 +26,19 @@ export default function DBManager () {
         date_of_birth: "",
         height: "",
         weight: "",
-        nationality: ""
+        team_ids: [],
+        position_ids: [],
+        nationality: "",
+        team_name: "",
+        contract_start: "",
+        contract_finish: "",
     })
     const [updateData, setUpdateData] = React.useState({
         previous_name: "",
         name: ""
     })
+    const [teamInputValue, setTeamInputValue] = React.useState("")
+    const [positionInputValue, setPositionInputValue] = React.useState("")
 
     return (
         <div className='h-screen w-screen flex flex-col'>
@@ -58,11 +65,62 @@ export default function DBManager () {
                             )
                         }
                         {
+                            activeTab === "Coach" && (
+                                <>
+                                    <Input placeholder="Team Name" value={createData.team_name} onChange={(e) => setCreateData((prev) => {return { ...prev, team_name: e.target.value}})}/>
+                                    <Input placeholder="Contract Start" value={createData.contract_start} onChange={(e) => setCreateData((prev) => {return { ...prev, contract_start: e.target.value}})}/>
+                                    <Input placeholder="Contract Finish" value={createData.contract_finish} onChange={(e) => setCreateData((prev) => {return { ...prev, contract_finish: e.target.value}})}/>
+                                </>
+                            )
+                        }
+                        {
                             activeTab === "Player" && (
                                 <>
                                     <Input placeholder="Date of Birth" value={createData.date_of_birth} onChange={(e) => setCreateData((prev) => {return { ...prev, date_of_birth: e.target.value}})}/>
                                     <Input placeholder="Height" value={createData.height} onChange={(e) => setCreateData((prev) => {return { ...prev, height: e.target.value}})}/>
                                     <Input placeholder="Weight" value={createData.weight} onChange={(e) => setCreateData((prev) => {return { ...prev, weight: e.target.value}})}/>
+                                    <div className='flex flex-row gap-2'>
+                                        <Input className="border" placeholder="Team IDs" value={teamInputValue} onKeyUp={
+                                            (e) => {
+                                                if (e.key === 'Enter') {
+                                                    setCreateData((prev) => {
+                                                        return { ...prev, team_ids: [...prev.team_ids, teamInputValue]}
+                                                    })
+                                                    setTeamInputValue("")
+                                                }
+                                            }
+                                        } onChange={(e) => setTeamInputValue(e.target.value)}/>
+                                    </div>
+                                    <ul className='flex flex-row gap-1'>
+                                        {createData.team_ids.map((team_id) => (
+                                            <li key={team_id}>
+                                                <div className="rounded-full border px-2">
+                                                    {team_id}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <div className='flex flex-row gap-2'>
+                                        <Input className="border" placeholder="Position IDs" value={positionInputValue} onKeyUp={
+                                            (e) => {
+                                                if (e.key === 'Enter') {
+                                                    setCreateData((prev) => {
+                                                        return { ...prev, position_ids: [...prev.position_ids, positionInputValue]}
+                                                    })
+                                                    setPositionInputValue("")
+                                                }
+                                            }
+                                        } onChange={(e) => setPositionInputValue(e.target.value)}/>
+                                    </div>
+                                    <ul className='flex flex-row gap-1'>
+                                        {createData.position_ids.map((position_id) => (
+                                            <li key={position_id}>
+                                                <div className="rounded-full border px-2">
+                                                    {position_id}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </>
                             )
                         }
@@ -70,7 +128,7 @@ export default function DBManager () {
                             () => {
                                 axios.post(`http://localhost:8000/api/create-user/`, {...createData, usertype: activeTab})
                                 .then(function (response) {
-                                    setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", nationality: ""});
+                                    setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", team_ids: [], position_ids: [], nationality: "", team_name: "", contract_start: "", contract_finish: ""});
                                 })
                                 .catch(function (error) {
                                     console.log(error);
