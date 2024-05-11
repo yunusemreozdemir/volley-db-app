@@ -2,22 +2,39 @@ import { Button } from "@/components/ui/button"
 import { useNavigate, Navigate} from 'react-router-dom'
 import { useAuth } from '../hooks'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import {Input} from '@/components/ui/input'
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+ 
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+  
 
 export default function DBManager () {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
     const isAuth = checkAuth()
 
-    if (!isAuth) return <Navigate to="/" />
+    const [positions, setPositions] = useState([])
+    const [teams, setTeams] = useState([])
+    const [date, setDate] = React.useState<Date>()
 
-    const user = getAuth()
-
-    
-    const [activeTab, setActiveTab] = React.useState('Coach')
     const [createData, setCreateData] = React.useState({
         username: "",
         password: "",
@@ -29,10 +46,31 @@ export default function DBManager () {
         team_ids: [],
         position_ids: [],
         nationality: "",
-        team_name: "",
-        contract_start: "",
-        contract_finish: "",
     })
+
+    useEffect(() => {
+        axios.get(`http://localhost:8000/api/get-positions/`)
+        .then(function (response) {
+            setPositions(response.data.positions)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        axios.get(`http://localhost:8000/api/get-teams/`)
+        .then(function (response) {
+            setTeams(response.data.teams)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }, [])
+
+    if (!isAuth) return <Navigate to="/" />
+
+    const user = getAuth()
+
+    
+    const [activeTab, setActiveTab] = React.useState('Coach')
     const [updateData, setUpdateData] = React.useState({
         previous_name: "",
         name: ""
@@ -55,72 +93,125 @@ export default function DBManager () {
                             <button className={activeTab === "Jury" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-500"} onClick={() => setActiveTab('Jury')}>Jury</button>
                             <button className={activeTab === "Player" ? "bg-white rounded-sm flex-1 p-1" : "flex-1 p-1 text-zinc-500"} onClick={() => setActiveTab('Player')}>Player</button>
                         </div>
-                        <Input placeholder="Username" value={createData.username} onChange={(e) => setCreateData((prev) => {return { ...prev, username: e.target.value}})}/>
-                        <Input placeholder="Password" value={createData.password} onChange={(e) => setCreateData((prev) => {return { ...prev, password: e.target.value}})}/>
-                        <Input placeholder="Name" value={createData.name} onChange={(e) => setCreateData((prev) => {return { ...prev, name: e.target.value}})}/>
-                        <Input placeholder="Surname" value={createData.surname} onChange={(e) => setCreateData((prev) => {return { ...prev, surname: e.target.value}})}/>
+                        <div className="flex flex-row gap-2">
+                            <Input placeholder="Username" value={createData.username} onChange={(e) => setCreateData((prev) => {return { ...prev, username: e.target.value}})}/>
+                            <Input placeholder="Password" type='password' value={createData.password} onChange={(e) => setCreateData((prev) => {return { ...prev, password: e.target.value}})}/>
+                        </div>
+                        <div className="flex flex-row gap-2">
+                            <Input placeholder="Name" value={createData.name} onChange={(e) => setCreateData((prev) => {return { ...prev, name: e.target.value}})}/>
+                            <Input placeholder="Surname" value={createData.surname} onChange={(e) => setCreateData((prev) => {return { ...prev, surname: e.target.value}})}/>
+                        </div>
                         {
                             (activeTab === "Coach" || activeTab === "Jury") && (
                                 <Input placeholder="Nationality" value={createData.nationality} onChange={(e) => setCreateData((prev) => {return { ...prev, nationality: e.target.value}})}/>
                             )
                         }
                         {
-                            activeTab === "Coach" && (
-                                <>
-                                    <Input placeholder="Team Name" value={createData.team_name} onChange={(e) => setCreateData((prev) => {return { ...prev, team_name: e.target.value}})}/>
-                                    <Input placeholder="Contract Start" value={createData.contract_start} onChange={(e) => setCreateData((prev) => {return { ...prev, contract_start: e.target.value}})}/>
-                                    <Input placeholder="Contract Finish" value={createData.contract_finish} onChange={(e) => setCreateData((prev) => {return { ...prev, contract_finish: e.target.value}})}/>
-                                </>
-                            )
-                        }
-                        {
                             activeTab === "Player" && (
                                 <>
-                                    <Input placeholder="Date of Birth" value={createData.date_of_birth} onChange={(e) => setCreateData((prev) => {return { ...prev, date_of_birth: e.target.value}})}/>
-                                    <Input placeholder="Height" value={createData.height} onChange={(e) => setCreateData((prev) => {return { ...prev, height: e.target.value}})}/>
-                                    <Input placeholder="Weight" value={createData.weight} onChange={(e) => setCreateData((prev) => {return { ...prev, weight: e.target.value}})}/>
-                                    <div className='flex flex-row gap-2'>
-                                        <Input className="border" placeholder="Team IDs" value={teamInputValue} onKeyUp={
-                                            (e) => {
-                                                if (e.key === 'Enter') {
-                                                    setCreateData((prev) => {
-                                                        return { ...prev, team_ids: [...prev.team_ids, teamInputValue]}
-                                                    })
-                                                    setTeamInputValue("")
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full justify-start text-left font-normal",
+                                                !date && "text-muted-foreground"
+                                            )}
+                                            >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {date ? format(date, "PPP") : <span>Date of Birth</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <Calendar
+                                            mode="single"
+                                            selected={date}
+                                            onSelect={
+                                                (date) => {
+                                                    setDate(date)
+                                                    setCreateData((prev) => {return { ...prev, date_of_birth: format(date, "dd/MM/yyyy")}})
                                                 }
                                             }
-                                        } onChange={(e) => setTeamInputValue(e.target.value)}/>
+                                            initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <div className="flex flex-row gap-2">
+                                        <Input placeholder="Height" value={createData.height} onChange={(e) => setCreateData((prev) => {return { ...prev, height: e.target.value}})}/>
+                                        <Input placeholder="Weight" value={createData.weight} onChange={(e) => setCreateData((prev) => {return { ...prev, weight: e.target.value}})}/>
                                     </div>
-                                    <ul className='flex flex-row gap-1'>
-                                        {createData.team_ids.map((team_id) => (
-                                            <li key={team_id}>
-                                                <div className="rounded-full border px-2">
-                                                    {team_id}
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <div className='flex flex-row gap-2'>
-                                        <Input className="border" placeholder="Position IDs" value={positionInputValue} onKeyUp={
-                                            (e) => {
-                                                if (e.key === 'Enter') {
-                                                    setCreateData((prev) => {
-                                                        return { ...prev, position_ids: [...prev.position_ids, positionInputValue]}
-                                                    })
-                                                    setPositionInputValue("")
-                                                }
-                                            }
-                                        } onChange={(e) => setPositionInputValue(e.target.value)}/>
+                                    <div className="flex flex-row gap-2">
+                                        <div className="w-full">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className="w-full">
+                                                    <Button className="w-full" variant="outline">Teams</Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    {
+                                                        teams.map((team) => (
+                                                            <DropdownMenuItem key={team[0]} onClick={() => {
+                                                                setCreateData((prev) => {
+                                                                    return { ...prev, team_ids: [...prev.team_ids, team[0]]}
+                                                                })
+                                                            }}>{team[1]}</DropdownMenuItem>
+                                                        ))
+                                                    }
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                            <ul className='flex flex-row gap-1 flex-wrap'>
+                                                {teams.filter((team) => createData.team_ids.includes(team[0])).map((team) => (
+                                                    <li key={team[0]}>
+                                                        <button onClick={
+                                                            () => {
+                                                                setCreateData((prev) => {
+                                                                    return { ...prev, team_ids: prev.team_ids.filter((team_id) => team_id !== team[0])}
+                                                                })
+                                                            }
+                                                        }>
+                                                            <div className="rounded-full border px-2">
+                                                                {team[1]}
+                                                            </div>
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div className="w-full">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className="w-full">
+                                                    <Button className="w-full" variant="outline">Positions</Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    {
+                                                        positions.map((position) => (
+                                                            <DropdownMenuItem key={position[0]} onClick={() => {
+                                                                setCreateData((prev) => {
+                                                                    return { ...prev, position_ids: [...prev.position_ids, position[0]]}
+                                                                })
+                                                            }}>{position[1]}</DropdownMenuItem>
+                                                        ))
+                                                    }
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                            <ul className='flex flex-row gap-1 flex-wrap'>
+                                                {positions.filter((position) => createData.position_ids.includes(position[0])).map((position) => (
+                                                    <li key={position[0]}>
+                                                        <button onClick={
+                                                            () => {
+                                                                setCreateData((prev) => {
+                                                                    return { ...prev, position_ids: prev.position_ids.filter((position_id) => position_id !== position[0])}
+                                                                })
+                                                            }
+                                                        }>
+                                                            <div className="rounded-full border px-2">
+                                                                {position[1]}
+                                                            </div>
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <ul className='flex flex-row gap-1'>
-                                        {createData.position_ids.map((position_id) => (
-                                            <li key={position_id}>
-                                                <div className="rounded-full border px-2">
-                                                    {position_id}
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
                                 </>
                             )
                         }
@@ -128,7 +219,7 @@ export default function DBManager () {
                             () => {
                                 axios.post(`http://localhost:8000/api/create-user/`, {...createData, usertype: activeTab})
                                 .then(function (response) {
-                                    setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", team_ids: [], position_ids: [], nationality: "", team_name: "", contract_start: "", contract_finish: ""});
+                                    setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", team_ids: [], position_ids: [], nationality: ""});
                                 })
                                 .catch(function (error) {
                                     console.log(error);
