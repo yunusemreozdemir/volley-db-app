@@ -19,8 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 
 const loginFormSchema = z.object({
-    username: z.string().min(2).max(50),
-    password: z.string().min(2).max(50),
+    username: z.string(),
+    password: z.string(),
   })
 
 
