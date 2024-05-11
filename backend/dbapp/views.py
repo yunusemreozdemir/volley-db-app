@@ -65,15 +65,7 @@ def create_user(request):
 
     elif usertype == "Coach":
         nationality = data['nationality']
-        team_name = data['team_name']
-        contract_start = data['contract_start']
-        contract_finish = data['contract_finish']
         cursor.execute("INSERT INTO Coach (username, password, name, surname,  nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
-        cursor.execute("SELECT MAX(team_ID) FROM Team")
-        team_id = cursor.fetchone()[0] + 1
-        cursor.execute(f"SELECT * FROM Team WHERE team_name = " + f"'{team_name}'")
-        team = cursor.fetchone()
-        cursor.execute("INSERT INTO Team (team_ID, team_name, coach_username, contract_start, contract_finish, channel_id, channel_name) VALUES (%s, %s, %s, %s, %s, %s, %s)", [team_id, team_name, username, contract_start, contract_finish, team[5], team[6]])
         
     elif usertype == "Jury":
         nationality = data['nationality']
