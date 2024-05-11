@@ -2,23 +2,30 @@ DROP DATABASE IF EXISTS VolleyDB;
 CREATE DATABASE VolleyDB;
 USE VolleyDB;
 
+CREATE TABLE DBManager 
+(
+    username	VARCHAR(512) NOT NULL,
+    password	VARCHAR(512) NOT NULL,
+    PRIMARY KEY (username)
+);
+
 CREATE TABLE Player 
 (
-    username	VARCHAR(512),
-    password	VARCHAR(512),
-    name	VARCHAR(512),
-    surname	VARCHAR(512),
-    date_of_birth	VARCHAR(512),
-    height	INT,
-    weight	INT,
+    username	VARCHAR(512) NOT NULL,
+    password	VARCHAR(512) NOT NULL,
+    name	VARCHAR(512) NOT NULL,
+    surname	VARCHAR(512) NOT NULL,
+    date_of_birth	VARCHAR(512) NOT NULL,
+    height	INT NOT NULL,
+    weight	INT NOT NULL,
     PRIMARY KEY (username)
 );
 
 CREATE TABLE PlayerPositions 
 (
     player_positions_id	INT,
-    username	VARCHAR(512),
-    position	INT,
+    username	VARCHAR(512) NOT NULL,
+    position	INT NOT NULL,
     PRIMARY KEY (player_positions_id),
     UNIQUE (username, position)
     
@@ -27,60 +34,60 @@ CREATE TABLE PlayerPositions
 CREATE TABLE PlayerTeams 
 (
     player_teams_id	INT,
-    username	VARCHAR(512),
-    team	INT,
+    username	VARCHAR(512) NOT NULL,
+    team	INT NOT NULL,
     PRIMARY KEY (player_teams_id)
 );
 
 CREATE TABLE Team 
 (
     team_ID	INT,
-    team_name	VARCHAR(512),
-    coach_username	VARCHAR(512),
-    contract_start	VARCHAR(512),
-    contract_finish	VARCHAR(512),
-    channel_ID	INT,
-    channel_name	VARCHAR(512),
+    team_name	VARCHAR(512) NOT NULL,
+    coach_username	VARCHAR(512) NOT NULL,
+    contract_start	VARCHAR(512) NOT NULL,
+    contract_finish	VARCHAR(512) NOT NULL,
+    channel_ID	INT NOT NULL,
+    channel_name	VARCHAR(512) NOT NULL,
     PRIMARY KEY (team_ID)
 );
 
 CREATE TABLE Coach 
 (
-    username	VARCHAR(512),
-    password	VARCHAR(512),
-    name	VARCHAR(512),
-    surname	VARCHAR(512),
-    nationality	VARCHAR(512),
+    username	VARCHAR(512) NOT NULL,
+    password	VARCHAR(512) NOT NULL,
+    name	VARCHAR(512) NOT NULL,
+    surname	VARCHAR(512) NOT NULL,
+    nationality	VARCHAR(512) NOT NULL,
     PRIMARY KEY (username)
 );
 
 CREATE TABLE Position 
 (
     position_ID	INT,
-    position_name	VARCHAR(512),
+    position_name	VARCHAR(512) NOT NULL,
     PRIMARY KEY (position_ID)
 );
 
 CREATE TABLE Jury 
 (
     username	VARCHAR(512),
-    password	VARCHAR(512),
-    name	VARCHAR(512),
-    surname	VARCHAR(512),
-    nationality	VARCHAR(512),
+    password	VARCHAR(512) NOT NULL,
+    name	VARCHAR(512) NOT NULL,
+    surname	VARCHAR(512) NOT NULL,
+    nationality	VARCHAR(512) NOT NULL,
     PRIMARY KEY (username)
 );
 
 CREATE TABLE MatchSession 
 (
     session_ID	INT,
-    team_ID	INT,
-    stadium_ID	INT,
-    stadium_name	VARCHAR(512),
-    stadium_country	VARCHAR(512),
-    time_slot	INT,
-    date	VARCHAR(512),
-    assigned_jury_username	VARCHAR(512),
+    team_ID	INT NOT NULL,
+    stadium_ID	INT NOT NULL,
+    stadium_name	VARCHAR(512) NOT NULL,
+    stadium_country	VARCHAR(512) NOT NULL,
+    time_slot	INT NOT NULL,
+    date	VARCHAR(512) NOT NULL,
+    assigned_jury_username	VARCHAR(512) NOT NULL,
     rating	DOUBLE,
     PRIMARY KEY (session_ID)
 );
@@ -88,12 +95,15 @@ CREATE TABLE MatchSession
 CREATE TABLE SessionSquads 
 (
     squad_ID	INT,
-    session_ID	INT,
-    played_player_username	VARCHAR(512),
-    position_ID	INT,
+    session_ID	INT NOT NULL,
+    played_player_username	VARCHAR(512) NOT NULL,
+    position_ID	INT NOT NULL,
     PRIMARY KEY (squad_ID)
 );
 
+INSERT INTO DBManager (username, password) VALUES ('Kevin', 'Kevin');
+INSERT INTO DBManager (username, password) VALUES ('Bob', 'Bob');
+INSERT INTO DBManager (username, password) VALUES ('sorunlubirarkadas', 'muvaffakiyetsizleştiricileştiriveremeyebileceklerimizdenmişsinizcesine');
 INSERT INTO SessionSquads (squad_ID, session_ID, played_player_username, position_ID) VALUES ('1', '0', 'g_orge', '0');
 INSERT INTO SessionSquads (squad_ID, session_ID, played_player_username, position_ID) VALUES ('2', '0', 'c_ozbay', '1');
 INSERT INTO SessionSquads (squad_ID, session_ID, played_player_username, position_ID) VALUES ('3', '0', 'm_vargas', '2');
