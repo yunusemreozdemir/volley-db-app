@@ -36,16 +36,16 @@ export default function DBManager () {
     const [date, setDate] = React.useState<Date>()
 
     const [createData, setCreateData] = React.useState({
-        username: "",
-        password: "",
-        name: "",
-        surname: "",
-        date_of_birth: "",
-        height: "",
-        weight: "",
+        username: null,
+        password: null,
+        name: null,
+        surname: null,
+        date_of_birth: null,
+        height: null,
+        weight: null,
         team_ids: [],
         position_ids: [],
-        nationality: "",
+        nationality: null,
     })
 
     useEffect(() => {
@@ -80,8 +80,8 @@ export default function DBManager () {
     
     const [activeTab, setActiveTab] = React.useState('Coach')
     const [updateData, setUpdateData] = React.useState({
-        previous_name: "",
-        name: ""
+        previous_name: null,
+        name: null
     })
     const [teamInputValue, setTeamInputValue] = React.useState("")
     const [positionInputValue, setPositionInputValue] = React.useState("")
@@ -227,7 +227,7 @@ export default function DBManager () {
                             () => {
                                 axios.post(`http://localhost:8000/api/create-user/`, {...createData, usertype: activeTab})
                                 .then(function (response) {
-                                    setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", team_ids: [], position_ids: [], nationality: ""});
+                                    setCreateData({username: null, password: null, name: null, surname: null, date_of_birth: null, height: null, weight: null, team_ids: [], position_ids: [], nationality: null});
                                     setCreateResponseView({status: "success", message: "User created successfully!"});
                                 })
                                 .catch(function (error) {
@@ -249,7 +249,7 @@ export default function DBManager () {
                                 () => {
                                     axios.post(`http://localhost:8000/api/update-stadium/`, {previous_name: updateData.previous_name, name: updateData.name})
                                     .then(function (response) {
-                                        setUpdateData({previous_name: "", name: ""});
+                                        setUpdateData({previous_name: null, name: null});
                                         setUpdateResponseView({status: "success", message: "Stadium updated successfully!"});
                                     })
                                     .catch(function (error) {

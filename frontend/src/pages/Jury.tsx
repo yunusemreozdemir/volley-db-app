@@ -20,7 +20,7 @@ export default function Jury() {
     const [activeTab, setActiveTab] = React.useState('rate')
 
     const [statsTabState, setStatsTabState] = React.useState({averageRating: 0, ratingCount: 0})
-    const [rateTabState, setRateTabState] = React.useState({sessionID: "", rating: ""})
+    const [rateTabState, setRateTabState] = React.useState({sessionID: null, rating: null})
 
     const [rateResponseView, setRateResponseView] = React.useState({
         status: "",
@@ -81,7 +81,7 @@ export default function Jury() {
                                             jury_username: user.user[0]
                                         })
                                         .then(function (response) {
-                                            setRateTabState({sessionID: "", rating: ""});
+                                            setRateTabState({sessionID: null, rating: null});
                                             setRateResponseView({
                                                 status: "success",
                                                 message: "Rating submitted successfully!"

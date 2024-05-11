@@ -80,9 +80,9 @@ export default function Coach () {
 
     const [activeTab, setActiveTab] = React.useState('addMatchSession')
 
-    const [addTabState, setAddTabState] = React.useState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""})
-    const [deleteTabState, setDeleteTabState] = React.useState('')
-    const [createTabState, setCreateTabState] = React.useState({ players: [], nameInputValue: "", positionInputValue: "", session_id: ""})
+    const [addTabState, setAddTabState] = React.useState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_name: null, assigned_jury_surname: null})
+    const [deleteTabState, setDeleteTabState] = React.useState(null)
+    const [createTabState, setCreateTabState] = React.useState({ players: [], nameInputValue: null, positionInputValue: null, session_id: null})
     const [viewTabState, setViewTabState] = React.useState([])
  
 
@@ -175,7 +175,7 @@ export default function Coach () {
                                         
                                         })
                                         .then(function (response) {
-                                            setAddTabState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""});
+                                            setAddTabState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_name: null, assigned_jury_surname: null});
                                             setAddResponseView({status: "success", message: "Match session added successfully!"});
                                         })
                                         .catch(function (error) {
@@ -197,7 +197,7 @@ export default function Coach () {
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/delete-match-session/`, {"session_ID": deleteTabState})
                                         .then(function (response) {
-                                            setDeleteTabState('');
+                                            setDeleteTabState(null);
                                             setDeleteResponseView({status: "success", message: "Match session deleted successfully!"});
                                         })
                                         .catch(function (error) {
@@ -238,7 +238,7 @@ export default function Coach () {
                                         </Select>
                                         <Button onClick={() => {
                                             setCreateTabState((prev) => {
-                                                return { ...prev, players: [...prev.players, {name: prev.nameInputValue, position: prev.positionInputValue}], nameInputValue: '', positionInputValue: ''}
+                                                return { ...prev, players: [...prev.players, {name: prev.nameInputValue, position: prev.positionInputValue}], nameInputValue: null, positionInputValue: null}
                                             })
                                         }}>Add</Button>
                                     </div>
@@ -251,7 +251,7 @@ export default function Coach () {
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/create-squad/`, {session_id: createTabState.session_id, players: createTabState.players, coach_username: user.user[0]})
                                         .then(function (response) {
-                                            setCreateTabState({ players: [], nameInputValue: '', positionInputValue: "", session_id: ''});
+                                            setCreateTabState({ players: [], nameInputValue: null, positionInputValue: null, session_id: null});
                                             setCreateResponseView({status: "success", message: "Squad created successfully!"});
                                         })
                                         .catch(function (error) {
