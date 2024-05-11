@@ -20,9 +20,7 @@ CREATE TABLE PlayerPositions
     username	VARCHAR(512),
     position	INT,
     PRIMARY KEY (player_positions_id),
-    UNIQUE (username, position),
-    FOREIGN KEY (username) REFERENCES Player,
-    FOREIGN KEY (position) REFERENCES Position
+    UNIQUE (username, position)
     
 );
 
@@ -31,9 +29,7 @@ CREATE TABLE PlayerTeams
     player_teams_id	INT,
     username	VARCHAR(512),
     team	INT,
-    PRIMARY KEY (player_teams_id),
-    FOREIGN KEY (username) REFERENCES Player ON DELETE CASCADE,
-    FOREIGN KEY (team) REFERENCES Team ON DELETE CASCADE
+    PRIMARY KEY (player_teams_id)
 );
 
 CREATE TABLE Team 
@@ -45,8 +41,7 @@ CREATE TABLE Team
     contract_finish	VARCHAR(512),
     channel_ID	INT,
     channel_name	VARCHAR(512),
-    PRIMARY KEY (team_ID),
-    FOREIGN KEY(coach_username) REFERENCES Coach
+    PRIMARY KEY (team_ID)
 );
 
 CREATE TABLE Coach 
@@ -87,9 +82,7 @@ CREATE TABLE MatchSession
     date	VARCHAR(512),
     assigned_jury_username	VARCHAR(512),
     rating	DOUBLE,
-    PRIMARY KEY (session_ID),
-    FOREIGN KEY (team_ID) REFERENCES Team,
-    FOREIGN KEY (assigned_jury_username) REFERENCES Jury
+    PRIMARY KEY (session_ID)
 );
 
 CREATE TABLE SessionSquads 
@@ -98,9 +91,7 @@ CREATE TABLE SessionSquads
     session_ID	INT,
     played_player_username	VARCHAR(512),
     position_ID	INT,
-    PRIMARY KEY (squad_ID),
-    FOREIGN KEY (session_ID) REFERENCES MatchSession,
-    FOREIGN KEY (played_player_username, position_ID) REFERENCES PlayerPositions(username, position)
+    PRIMARY KEY (squad_ID)
 );
 
 INSERT INTO SessionSquads (squad_ID, session_ID, played_player_username, position_ID) VALUES ('1', '0', 'g_orge', '0');
