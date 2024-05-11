@@ -1,7 +1,7 @@
 import { useNavigate, Navigate} from 'react-router-dom'
 import { useAuth } from '../hooks'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {Input} from '@/components/ui/input'
@@ -17,14 +17,49 @@ import {
     TableRow,
   } from "@/components/ui/table"
 
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+ 
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+import { parse } from 'path';
+  
+
 export default function Coach () {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
     const isAuth = checkAuth()
 
+    const [positions, setPositions] = useState([])
+
+    useEffect(() => {
+        axios.get(`http://localhost:8000/api/get-positions/`)
+        .then(function (response) {
+            setPositions(response.data.positions)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }, [])
+
     if (!isAuth) return <Navigate to="/" />
 
     const user = getAuth()
+
+    const [date, setDate] = React.useState<Date>()
 
     const [activeTab, setActiveTab] = React.useState('addMatchSession')
 
@@ -63,12 +98,58 @@ export default function Coach () {
                             activeTab === 'addMatchSession' && (
                                 <div className='flex flex-col gap-2'>
                                     <h1 className="text-2xl font-bold">Add Match Session</h1>
-                                    <Input placeholder='Stadium Name' className='border' value={addTabState.stadium_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_name: e.target.value}})}/>
-                                    <Input placeholder='Stadium Country' className='border' value={addTabState.stadium_country} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_country: e.target.value}})}/>
-                                    <Input placeholder='Date' className='border' value={addTabState.date} onChange={(e) => setAddTabState((prev) => {return { ...prev, date: e.target.value}})}/>
-                                    <Input placeholder='Time Slot' className='border' value={addTabState.time_slot} onChange={(e) => setAddTabState((prev) => {return { ...prev, time_slot: e.target.value}})}/>
-                                    <Input placeholder='Jury Name' className='border' value={addTabState.assigned_jury_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_name: e.target.value}})}/>
-                                    <Input placeholder='Jury Surname' className='border' value={addTabState.assigned_jury_surname} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_surname: e.target.value}})}/>
+                                    <div className="flex flex-row gap-2">
+                                        <Input placeholder='Stadium Name' className='border' value={addTabState.stadium_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_name: e.target.value}})}/>
+                                        <Input placeholder='Stadium Country' className='border' value={addTabState.stadium_country} onChange={(e) => setAddTabState((prev) => {return { ...prev, stadium_country: e.target.value}})}/>
+                                    </div>
+                                    <div className="flex flex-row gap-2">
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !date && "text-muted-foreground"
+                                                )}
+                                                >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {date ? format(date, "PPP") : <span>Date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                mode="single"
+                                                selected={date}
+                                                onSelect={
+                                                    (date) => {
+                                                        setDate(date)
+                                                        setAddTabState((prev) => {return { ...prev, date: format(date, "dd.MM.yyyy")}})
+                                                    }
+                                                }
+                                                initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <Select onValueChange={
+                                            (value) => {
+                                                setAddTabState((prev) => {return { ...prev, time_slot: parseInt(value)}})
+                                            }
+                                        
+                                        }>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Time Slot" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1">1</SelectItem>
+                                                <SelectItem value="2">2</SelectItem>
+                                                <SelectItem value="3">3</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex flex-row gap-2">
+                                        <Input placeholder='Jury Name' className='border' value={addTabState.assigned_jury_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_name: e.target.value}})}/>
+                                        <Input placeholder='Jury Surname' className='border' value={addTabState.assigned_jury_surname} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_surname: e.target.value}})}/>
+                                    </div>
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/add-match-session/`, {
                                             ...addTabState,
@@ -110,7 +191,23 @@ export default function Coach () {
                                     <Input className="border" placeholder='Session ID' value={createTabState.session_id} onChange={(e) => setCreateTabState((prev) => {return { ...prev, session_id: e.target.value}})}/>
                                     <div className='flex flex-row gap-2'>
                                         <Input className="border" placeholder="Player Name" value={createTabState.nameInputValue} onChange={(e) => setCreateTabState((prev) => {return { ...prev, nameInputValue: e.target.value}})} />
-                                        <Input className="border" placeholder="Position" value={createTabState.positionInputValue} onChange={(e) => setCreateTabState((prev) => {return { ...prev, positionInputValue: e.target.value}})} />
+                                        <Select onValueChange={
+                                            (value) => {
+                                                setCreateTabState((prev) => {return { ...prev, positionInputValue: parseInt(value)}})
+                                            }
+                                        
+                                        }>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Position" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {
+                                                    positions.map((position) => (
+                                                        <SelectItem value={position[0]}>{position[1]}</SelectItem>
+                                                    ))
+                                                }
+                                            </SelectContent>
+                                        </Select>
                                         <Button onClick={() => {
                                             setCreateTabState((prev) => {
                                                 return { ...prev, players: [...prev.players, {name: prev.nameInputValue, position: prev.positionInputValue}], nameInputValue: '', positionInputValue: ''}
@@ -120,7 +217,7 @@ export default function Coach () {
                                     </div>
                                     <ul className='flex flex-col gap-1'>
                                         {createTabState.players.map((player) => (
-                                            <li key={player.name}>{player.name + " - " + player.position}</li>
+                                            <li key={player.name}>{player.name + " - " + positions.filter((position) => position[0] === player.position)[0][1]}</li>
                                         ))}
                                     </ul>
                                     <Button onClick={() => {
