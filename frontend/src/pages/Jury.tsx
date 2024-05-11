@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import {Input} from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
+import { set } from 'date-fns';
 
 export default function Jury() {
     const navigate = useNavigate()
@@ -21,6 +22,14 @@ export default function Jury() {
     const [statsTabState, setStatsTabState] = React.useState({averageRating: 0, ratingCount: 0})
     const [rateTabState, setRateTabState] = React.useState({sessionID: "", rating: ""})
 
+    const [rateResponseView, setRateResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+    const [statsResponseView, setStatsResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
     return (
         <div className='h-screen w-screen flex flex-col'>
             <div className='flex-initial flex flex-row justify-between bg-zinc-900 text-white py-3 px-5 items-center'>
@@ -34,6 +43,10 @@ export default function Jury() {
                         })
                         .catch(function (error) {
                             console.log(error);
+                            setStatsResponseView({
+                                status: "error",
+                                message: error.response.data
+                            })
                         });
                         setActiveTab('stats');
                     }}>Stats</button>
@@ -49,6 +62,9 @@ export default function Jury() {
                                     <h1 className="text-2xl font-bold">Stats</h1>
                                     <div>{`Average rating: ${statsTabState.averageRating}`}</div>
                                     <div>{`Rating count: ${statsTabState.ratingCount}`}</div>
+                                    <div className={statsResponseView.status === "" ? "hidden" : "text-red-500"}>
+                                        {statsResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }
@@ -66,11 +82,22 @@ export default function Jury() {
                                         })
                                         .then(function (response) {
                                             setRateTabState({sessionID: "", rating: ""});
+                                            setRateResponseView({
+                                                status: "success",
+                                                message: "Rating submitted successfully!"
+                                            })
                                         })
                                         .catch(function (error) {
                                             console.log(error);
+                                            setRateResponseView({
+                                                status: "error",
+                                                message: error.response.data
+                                            })
                                         });
                                     }}>Rate</Button>
+                                    <div className={rateResponseView.status === "" ? "hidden" : (rateResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                                        {rateResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }

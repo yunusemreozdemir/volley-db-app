@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 
-import { format } from "date-fns"
+import { format, set } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
  
 import { cn } from "@/lib/utils"
@@ -69,6 +69,14 @@ export default function DBManager () {
 
     const user = getAuth()
 
+    const [createResponseView, setCreateResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+    const [updateResponseView, setUpdateResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
     
     const [activeTab, setActiveTab] = React.useState('Coach')
     const [updateData, setUpdateData] = React.useState({
@@ -220,12 +228,17 @@ export default function DBManager () {
                                 axios.post(`http://localhost:8000/api/create-user/`, {...createData, usertype: activeTab})
                                 .then(function (response) {
                                     setCreateData({username: "", password: "", name: "", surname: "", date_of_birth: "", height: "", weight: "", team_ids: [], position_ids: [], nationality: ""});
+                                    setCreateResponseView({status: "success", message: "User created successfully!"});
                                 })
                                 .catch(function (error) {
                                     console.log(error);
+                                    setCreateResponseView({status: "error", message: error.response.data});
                                 });
                             }
                         }>Create</Button>
+                        <div className={createResponseView.status === "" ? "hidden" : (createResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                            {createResponseView.message}
+                        </div>
                     </div>
                     <div className="flex-[30%] rounded-md shadow-sm border p-5 flex flex-col gap-2 h-min">
                         <h1 className="text-2xl font-bold">Update Stadium</h1>
@@ -237,12 +250,17 @@ export default function DBManager () {
                                     axios.post(`http://localhost:8000/api/update-stadium/`, {previous_name: updateData.previous_name, name: updateData.name})
                                     .then(function (response) {
                                         setUpdateData({previous_name: "", name: ""});
+                                        setUpdateResponseView({status: "success", message: "Stadium updated successfully!"});
                                     })
                                     .catch(function (error) {
                                         console.log(error);
+                                        setUpdateResponseView({status: "error", message: error.response.data});
                                     });  
                                 }
                             }>Update</Button>
+                        </div>
+                        <div className={updateResponseView.status === "" ? "hidden" : (updateResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                            {updateResponseView.message}
                         </div>
                     </div>
                 </div>

@@ -59,6 +59,23 @@ export default function Coach () {
 
     const user = getAuth()
 
+    const [addResponseView, setAddResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+    const [deleteResponseView, setDeleteResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+    const [createResponseView, setCreateResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+    const [viewResponseView, setViewResponseView] = React.useState({
+        status: "",
+        message: ""
+    })
+
     const [date, setDate] = React.useState<Date>()
 
     const [activeTab, setActiveTab] = React.useState('addMatchSession')
@@ -86,6 +103,7 @@ export default function Coach () {
                             })
                             .catch(function (error) {
                                 console.log(error);
+                                setViewResponseView({status: "error", message: error.response.data});
                             });
                     }}>View Stadiums</button>
                 </div>
@@ -158,11 +176,16 @@ export default function Coach () {
                                         })
                                         .then(function (response) {
                                             setAddTabState({stadium_name: "", stadium_country: "", date: "", time_slot: "", assigned_jury_name: "", assigned_jury_surname: ""});
+                                            setAddResponseView({status: "success", message: "Match session added successfully!"});
                                         })
                                         .catch(function (error) {
-                                          console.log(error);
+                                            console.log(error);
+                                            setAddResponseView({status: "error", message: error.response.data});
                                         }); 
                                     }}>Add</Button>
+                                    <div className={addResponseView.status === "" ? "hidden" : (addResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                                        {addResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }
@@ -175,11 +198,16 @@ export default function Coach () {
                                         axios.post(`http://localhost:8000/api/delete-match-session/`, {"session_ID": deleteTabState})
                                         .then(function (response) {
                                             setDeleteTabState('');
+                                            setDeleteResponseView({status: "success", message: "Match session deleted successfully!"});
                                         })
                                         .catch(function (error) {
                                           console.log(error);
+                                            setDeleteResponseView({status: "error", message: error.response.data});
                                         }); 
                                     }}>Delete</Button>
+                                    <div className={deleteResponseView.status === "" ? "hidden" : (deleteResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                                        {deleteResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }
@@ -224,33 +252,43 @@ export default function Coach () {
                                         axios.post(`http://localhost:8000/api/create-squad/`, {session_id: createTabState.session_id, players: createTabState.players, coach_username: user.user[0]})
                                         .then(function (response) {
                                             setCreateTabState({ players: [], nameInputValue: '', positionInputValue: "", session_id: ''});
+                                            setCreateResponseView({status: "success", message: "Squad created successfully!"});
                                         })
                                         .catch(function (error) {
                                           console.log(error);
+                                            setCreateResponseView({status: "error", message: error.response.data});
                                         }); 
                                     }}>Create</Button>
+                                    <div className={createResponseView.status === "" ? "hidden" : (createResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                                        {createResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }
                         {
                             activeTab === 'viewStadiums' && (
                                 <div>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                            <TableHead className="w-[100px]">Stadium</TableHead>
-                                            <TableHead className="text-right">Country</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {viewTabState.map((stadium) => (
-                                            <TableRow key={stadium[0]}>
-                                                <TableCell className="font-medium whitespace-nowrap">{stadium[0]}</TableCell>
-                                                <TableCell className="text-right">{stadium[1]}</TableCell>
-                                            </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                    <div>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                <TableHead className="w-[100px]">Stadium</TableHead>
+                                                <TableHead className="text-right">Country</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {viewTabState.map((stadium) => (
+                                                <TableRow key={stadium[0]}>
+                                                    <TableCell className="font-medium whitespace-nowrap">{stadium[0]}</TableCell>
+                                                    <TableCell className="text-right">{stadium[1]}</TableCell>
+                                                </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                    <div className={viewResponseView.status === "" ? "hidden" : "text-red-500"}>
+                                        {viewResponseView.message}
+                                    </div>
                                 </div>
                             )
                         }

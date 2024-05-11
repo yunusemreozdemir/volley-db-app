@@ -77,8 +77,17 @@ export default function Home() {
           })
           .catch(function (error) {
             console.log(error);
+            setLoginResponseView({
+                status: "error",
+                message: "Invalid username or password"
+            })
           });        
     }
+
+    const [loginResponseView, setLoginResponseView] = useState<string>({
+        status: "",
+        message: ""
+    })
 
     return (
         <div className="flex justify-center w-screen h-screen">
@@ -119,6 +128,9 @@ export default function Home() {
                                 <Button className="w-full bg-zinc-900" type="submit">Continue</Button>
                             </form>
                         </Form>
+                        <div className={loginResponseView.status === "" ? "hidden" : (loginResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
+                            {loginResponseView.message}
+                        </div>
                     </div>
                 </div>
             </div>
