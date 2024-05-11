@@ -232,7 +232,7 @@ export default function DBManager () {
                                 })
                                 .catch(function (error) {
                                     console.log(error);
-                                    setCreateResponseView({status: "error", message: error.response.data});
+                                    setCreateResponseView({status: "error", message: "An error occured while creating user!"});
                                 });
                             }
                         }>Create</Button>
@@ -254,7 +254,7 @@ export default function DBManager () {
                                     })
                                     .catch(function (error) {
                                         console.log(error);
-                                        setUpdateResponseView({status: "error", message: error.response.data});
+                                        setUpdateResponseView({status: "error", message: "An error occured while updating stadium!"});
                                     });  
                                 }
                             }>Update</Button>

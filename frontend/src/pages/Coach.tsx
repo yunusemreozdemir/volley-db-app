@@ -103,7 +103,7 @@ export default function Coach () {
                             })
                             .catch(function (error) {
                                 console.log(error);
-                                setViewResponseView({status: "error", message: error.response.data});
+                                setViewResponseView({status: "error", message: "An error occurred while fetching stadiums!"});
                             });
                     }}>View Stadiums</button>
                 </div>
@@ -180,7 +180,7 @@ export default function Coach () {
                                         })
                                         .catch(function (error) {
                                             console.log(error);
-                                            setAddResponseView({status: "error", message: error.response.data});
+                                            setAddResponseView({status: "error", message: "An error occurred while adding match session!"});
                                         }); 
                                     }}>Add</Button>
                                     <div className={addResponseView.status === "" ? "hidden" : (addResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
@@ -202,7 +202,7 @@ export default function Coach () {
                                         })
                                         .catch(function (error) {
                                           console.log(error);
-                                            setDeleteResponseView({status: "error", message: error.response.data});
+                                            setDeleteResponseView({status: "error", message: "An error occurred while deleting match session!"});
                                         }); 
                                     }}>Delete</Button>
                                     <div className={deleteResponseView.status === "" ? "hidden" : (deleteResponseView.status === "success" ? "text-green-500" : "text-red-500")}>
@@ -256,7 +256,7 @@ export default function Coach () {
                                         })
                                         .catch(function (error) {
                                           console.log(error);
-                                            setCreateResponseView({status: "error", message: error.response.data});
+                                            setCreateResponseView({status: "error", message: "An error occurred while creating squad!"});
                                         }); 
                                     }}>Create</Button>
                                     <div className={createResponseView.status === "" ? "hidden" : (createResponseView.status === "success" ? "text-green-500" : "text-red-500")}>

@@ -45,7 +45,7 @@ export default function Jury() {
                             console.log(error);
                             setStatsResponseView({
                                 status: "error",
-                                message: error.response.data
+                                message: "An error occurred while fetching stats!"
                             })
                         });
                         setActiveTab('stats');
@@ -91,7 +91,7 @@ export default function Jury() {
                                             console.log(error);
                                             setRateResponseView({
                                                 status: "error",
-                                                message: error.response.data
+                                                message: "An error occurred while submitting rating!"
                                             })
                                         });
                                     }}>Rate</Button>
