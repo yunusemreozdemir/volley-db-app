@@ -9,7 +9,7 @@ BEGIN
     DECLARE m_count INT;
     SELECT COUNT(*) INTO m_count
     FROM MatchSession
-    WHERE rating IS NOT NULL AND session_ID = NEW.session_ID;
+    WHERE rating IS NOT NULL AND rating != NEW.rating AND session_ID = NEW.session_ID;
 
     IF m_count > 0 THEN
         SIGNAL SQLSTATE '45000'
