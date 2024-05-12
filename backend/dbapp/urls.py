@@ -12,6 +12,7 @@ urlpatterns = [
     path('get-stadiums/', views.get_stadiums, name='get-stadiums'),
     path('delete-match-session/', views.delete_match_session, name='delete-match-session'),
     path('add-match-session/', views.add_match_session, name='add-match-session'),
+    path("get-match-sessions/", views.get_match_sessions, name="get-match-sessions"),   
     path('create-squad/', views.create_squad, name='create-squad'),
     path('view-rating-stats/', views.view_rating_stats, name='view-rating-stats'),
     path('rate-match-session/', views.rate_match_session, name='rate-match-session'),

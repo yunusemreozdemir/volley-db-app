@@ -221,7 +221,7 @@ def rate_match_session(request):
     if not session_id:
         return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
     rating = data['rating']
-    if not rating:
+    if (not rating and rating != 0):
         return Response("No rating provided", status=status.HTTP_400_BAD_REQUEST)
     if rating < 0 or rating > 5:
         return Response("Rating must be between 0 and 5", status=status.HTTP_400_BAD_REQUEST)
@@ -271,6 +271,14 @@ def view_players(request):
 		            GROUP BY username)) AS H""")
     avg_height = cursor.fetchone()[0]
     return Response({"avg_height": avg_height, "players": sorted(players, key=lambda x: x[3], reverse=True)})
+
+
+@api_view(['GET'])
+def get_match_sessions(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT session_id FROM MatchSession")
+    session_ids = cursor.fetchall()
+    return Response({'session_ids': session_ids})
 
 
 @api_view(['GET'])
