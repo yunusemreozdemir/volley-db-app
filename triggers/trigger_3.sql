@@ -11,8 +11,9 @@ BEGIN
     
     SELECT COUNT(*) INTO m_count
     FROM MatchSession
-    WHERE ((stadium_ID = NEW.stadium_ID) AND (stadium_name != NEW.stadium_name or stadium_country != NEW.stadium_country)) OR
-    ((stadium_ID != NEW.stadium_ID) AND (stadium_name = NEW.stadium_name));
+    WHERE ((stadium_ID = NEW.stadium_ID) AND (stadium_name != NEW.stadium_name or stadium_country != NEW.stadium_country));
+-- OR
+ --   ((stadium_ID != NEW.stadium_ID) AND (stadium_name = NEW.stadium_name));
     
     IF m_count > 0 THEN
         SIGNAL SQLSTATE '45000'

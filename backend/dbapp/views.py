@@ -131,7 +131,7 @@ def add_match_session(request):
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(session_ID) FROM MatchSession")
     session_id = cursor.fetchone()[0] + 1
-    cursor.execute("SELECT DISTINCT stadium_ID FROM MatchSession WHERE stadium_name = %s", [stadium_name])
+    cursor.execute("SELECT DISTINCT stadium_ID FROM MatchSession WHERE stadium_name = %s AND stadium_country = %s" , [stadium_name, stadium_country])
     stadium = cursor.fetchone()
     if not stadium:
         cursor.execute("SELECT MAX(stadium_ID) FROM MatchSession")
