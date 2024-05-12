@@ -231,7 +231,9 @@ def rate_match_session(request):
     session = cursor.fetchone()
     if not session:
         return Response("Match session not found", status=status.HTTP_404_NOT_FOUND)
-    assigned_jury_username, rated = session[7], session[8]
+    date, assigned_jury_username, rated = session[6], session[7], session[8]
+    if datetime.strptime(date,f"%d.%m.%Y") > datetime.now():
+        return Response("Match session not yet played", status=status.HTTP_400_BAD_REQUEST)
     if assigned_jury_username != jury_username:
         return Response("Unauthorized jury", status=status.HTTP_401_UNAUTHORIZED)
     if rated:
