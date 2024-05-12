@@ -1,4 +1,4 @@
-DELIMETER //
+DELIMITER //
 
 DROP TRIGGER IF EXISTS team_existance_trigger; //
 
@@ -9,7 +9,7 @@ BEGIN
     DECLARE m_count INT;
     SELECT COUNT(*) INTO m_count
     FROM Team
-    WHERE team_ID = NEW.team_ID;
+    WHERE team_ID = NEW.team;
 
     IF team_count = 0 THEN
         SIGNAL SQLSTATE '45000'

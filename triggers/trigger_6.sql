@@ -1,4 +1,4 @@
-DELIMETER //
+DELIMITER //
 
 DROP TRIGGER IF EXISTS position_existance_trigger; //
 
@@ -9,7 +9,7 @@ BEGIN
     DECLARE m_count INT;
     SELECT COUNT(*) INTO m_count
     FROM Position
-    WHERE position_ID = NEW.position_ID;
+    WHERE position_ID = NEW.position;
 
     IF m_count = 0 THEN
         SIGNAL SQLSTATE '45000'
