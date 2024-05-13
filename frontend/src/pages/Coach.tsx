@@ -212,7 +212,6 @@ export default function Coach () {
                                         
                                         })
                                         .then(function (response) {
-                                            setAddTabState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_username: null});
                                             setAddResponseView({status: "success", message: "Match session added successfully!"});
                                         })
                                         .catch(function (error) {
@@ -234,7 +233,6 @@ export default function Coach () {
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/delete-match-session/`, {"session_ID": deleteTabState})
                                         .then(function (response) {
-                                            setDeleteTabState(null);
                                             setDeleteResponseView({status: "success", message: "Match session deleted successfully!"});
                                         })
                                         .catch(function (error) {
@@ -327,9 +325,6 @@ export default function Coach () {
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/create-squad/`, {session_id: createTabState.session_id, players: createTabState.players, coach_username: user.user[0]})
                                         .then(function (response) {
-                                            setSessions([]);
-                                            setPlayers([]);
-                                            setCreateTabState({ session_id: null, team_id: null, players: [null, null, null, null, null, null] });
                                             setCreateResponseView({status: "success", message: "Squad created successfully!"});
                                         })
                                         .catch(function (error) {

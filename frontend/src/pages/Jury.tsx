@@ -118,7 +118,6 @@ export default function Jury() {
                                             jury_username: user.user[0]
                                         })
                                         .then(function (response) {
-                                            setRateTabState({sessionID: null, rating: null});
                                             setRateResponseView({
                                                 status: "success",
                                                 message: "Rating submitted successfully!"
