@@ -178,7 +178,7 @@ export default function DBManager () {
                                                                 setCreateData((prev) => {
                                                                     return { ...prev, team_ids: [...prev.team_ids, team[0]]}
                                                                 })
-                                                            }}>{team[1]}</DropdownMenuItem>
+                                                            }}>{team[0] + " - " + team[1]}</DropdownMenuItem>
                                                         ))
                                                     }
                                                 </DropdownMenuContent>
@@ -194,7 +194,7 @@ export default function DBManager () {
                                                             }
                                                         }>
                                                             <div className="rounded-full border px-2">
-                                                                {team[1]}
+                                                                {team[0] + " - " + team[1]}
                                                             </div>
                                                         </button>
                                                     </li>
