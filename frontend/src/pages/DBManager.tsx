@@ -24,6 +24,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
   
 
 export default function DBManager () {
@@ -33,6 +41,7 @@ export default function DBManager () {
 
     const [positions, setPositions] = useState([])
     const [teams, setTeams] = useState([])
+    const [stadiums, setStadiums] = useState([])
     const [date, setDate] = React.useState<Date>()
 
     const [createData, setCreateData] = React.useState({
@@ -63,6 +72,14 @@ export default function DBManager () {
         .catch(function (error) {
             console.log(error);
         });
+        axios.get(`http://localhost:8000/api/get-stadiums/`)
+        .then(function (response) {
+            setStadiums(response.data.stadiums)
+            console.log(response.data.stadiums)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }, [])
 
     if (!isAuth) return <Navigate to="/" />
@@ -80,7 +97,7 @@ export default function DBManager () {
     
     const [activeTab, setActiveTab] = React.useState('Coach')
     const [updateData, setUpdateData] = React.useState({
-        previous_name: null,
+        previous_id: null,
         name: null
     })
     const [teamInputValue, setTeamInputValue] = React.useState("")
@@ -243,13 +260,29 @@ export default function DBManager () {
                     <div className="flex-[30%] rounded-md shadow-sm border p-5 flex flex-col gap-2 h-min">
                         <h1 className="text-2xl font-bold">Update Stadium</h1>
                         <div className="flex flex-col gap-2 w-full">
-                            <Input placeholder="Previous Name" className="border rounded-md py-1 px-2" value={updateData.previous_name} onChange={(e) => setUpdateData((prev) => {return { ...prev, previous_name: e.target.value}})}/>
+                            <Select onValueChange={
+                                (value) => {
+                                    setUpdateData((prev) => {return { ...prev, previous_id: value}})
+                                }
+                            
+                            }>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Stadium" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {
+                                        stadiums.map((stadium) => (
+                                            <SelectItem key={stadium[2]} value={stadium[2]}>{stadium[0]}</SelectItem>
+                                        ))
+                                    }
+                                </SelectContent>
+                            </Select>
                             <Input placeholder="New Name" value={updateData.name} onChange={(e) => setUpdateData((prev) => {return { ...prev, name: e.target.value}})}/>
                             <Button className="w-full bg-zinc-900" onClick={
                                 () => {
-                                    axios.post(`http://localhost:8000/api/update-stadium/`, {previous_name: updateData.previous_name, name: updateData.name})
+                                    axios.post(`http://localhost:8000/api/update-stadium/`, {previous_id: updateData.previous_id, name: updateData.name})
                                     .then(function (response) {
-                                        setUpdateData({previous_name: null, name: null});
+                                        setUpdateData({previous_id: null, name: null});
                                         setUpdateResponseView({status: "success", message: "Stadium updated successfully!"});
                                     })
                                     .catch(function (error) {
