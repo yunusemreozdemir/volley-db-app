@@ -25,12 +25,28 @@ def get_teams(request):
     return Response({'teams': teams})
 
 
-@api_view(['GET'])
-def get_stadiums(request):
+@api_view(['POST'])
+def get_coach_sessions(request):
+    data = request.data
+    coach_username = data['coach_username']
     cursor = connection.cursor()
-    cursor.execute("SELECT DISTINCT stadium_id, stadium_name, stadium_country FROM MatchSession")
-    stadiums = cursor.fetchall()
-    return Response({'stadiums': stadiums})
+    cursor.execute(f'SELECT session_ID, team_ID FROM MatchSession WHERE team_ID IN (SELECT team_ID FROM Team WHERE coach_username = "{coach_username}") AND session_ID NOT IN (SELECT session_ID FROM SessionSquads)')
+    sessions = cursor.fetchall()
+    return Response({'sessions': sessions})
+
+@api_view(['POST'])
+def get_team_players(request):
+    data = request.data
+    team_id = data['team_id']
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT username, name, surname FROM Player WHERE username IN (SELECT username FROM PlayerTeams WHERE team = {team_id})')
+    player_list = cursor.fetchall()
+    players = []
+    for player in player_list:
+        cursor.execute(f'SELECT position FROM PlayerPositions WHERE username = "{player[0]}"')
+        positions = cursor.fetchall()
+        players.append({'username': player[0], 'name': player[1], 'surname': player[2], 'positions': [position[0] for position in positions]})
+    return Response({'players': players})
 
 
 @api_view(['POST'])
@@ -93,10 +109,10 @@ def login(request):
 @api_view(['POST'])
 def update_stadium(request):
     data = request.data
-    previous_name = data['previous_name']
+    previous_id = data['previous_id']
     name = data['name']
     cursor = connection.cursor()
-    cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_name = %s", [name, previous_name])
+    cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_ID = %s", [name, previous_id])
     print(cursor.rowcount)
     return Response("Stadium not found" if cursor.rowcount == 0 else f"{cursor.rowcount} stadium names changed.", status=status.HTTP_200_OK)
     
@@ -179,7 +195,7 @@ def create_squad(request):
         return Response("Squad already exists", status=status.HTTP_400_BAD_REQUEST)
     
     for player in players:
-        cursor.execute(f'SELECT * FROM Player WHERE TRIM(name) = "{player["name"].strip()}"')
+        cursor.execute(f'SELECT * FROM Player WHERE username= "{player["username"].strip()}"')
         player_data = cursor.fetchone()
         if not player_data:
             print(player)
@@ -194,7 +210,7 @@ def create_squad(request):
         if cursor.fetchone():
             return Response("Player already played in a session", status=status.HTTP_400_BAD_REQUEST)
     for player in players:
-        cursor.execute(f'SELECT username FROM Player WHERE TRIM(name) = "{player["name"].strip()}"')
+        cursor.execute(f'SELECT username FROM Player WHERE username = "{player["username"].strip()}"')
         username = cursor.fetchone()[0]
         cursor.execute(f'SELECT MAX(squad_ID) FROM SessionSquads')
         squad_id = cursor.fetchone()[0] + 1
