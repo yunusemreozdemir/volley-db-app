@@ -43,7 +43,10 @@ export default function Coach () {
     const { logout, checkAuth, getAuth } = useAuth()
     const isAuth = checkAuth()
 
+    const user = getAuth()
+
     const [positions, setPositions] = useState([])
+    
 
     useEffect(() => {
         axios.get(`http://localhost:8000/api/get-positions/`)
@@ -56,8 +59,6 @@ export default function Coach () {
     }, [])
 
     if (!isAuth) return <Navigate to="/" />
-
-    const user = getAuth()
 
     const [addResponseView, setAddResponseView] = React.useState({
         status: "",
@@ -80,9 +81,12 @@ export default function Coach () {
 
     const [activeTab, setActiveTab] = React.useState('addMatchSession')
 
+    const [sessions, setSessions] = React.useState([])
+    const [players, setPlayers] = React.useState([])
+
     const [addTabState, setAddTabState] = React.useState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_name: null, assigned_jury_surname: null})
     const [deleteTabState, setDeleteTabState] = React.useState(null)
-    const [createTabState, setCreateTabState] = React.useState({ players: [], nameInputValue: null, positionInputValue: null, session_id: null})
+    const [createTabState, setCreateTabState] = React.useState({ session_id: null, team_id: null, players: [null, null, null, null, null, null] })
     const [viewTabState, setViewTabState] = React.useState([])
  
 
@@ -93,7 +97,19 @@ export default function Coach () {
                 <div className='flex flex-row bg-zinc-700 p-1 text-base gap-1 rounded-sm text-white whitespace-nowrap'>
                     <button className={activeTab === "addMatchSession" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('addMatchSession')}>Add Match Session</button>
                     <button className={activeTab === "deleteMatchSession" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('deleteMatchSession')}>Delete Match Session</button>
-                    <button className={activeTab === "createSquad" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => setActiveTab('createSquad')}>Create Squad</button>
+                    <button className={activeTab === "createSquad" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => {
+                        setActiveTab('createSquad')
+                        axios.post(`http://localhost:8000/api/get-coach-sessions/`, {coach_username: user.user[0]})
+                        .then(function (response) {
+                            console.log(response.data.sessions);
+                            setSessions(response.data.sessions);
+                            setCreateTabState((prev) => {return { ...prev, session_id: null}});
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            setCreateResponseView({status: "error", message: "An error occurred while fetching sessions!"});
+                        });
+                    }}>Create Squad</button>
                     <button className={activeTab === "viewStadiums" ? "bg-zinc-900 rounded-sm flex-1 py-1 px-4" : "flex-1 py-1 px-4 text-zinc-400"} onClick={() => {
                         setActiveTab('viewStadiums'); 
                         axios.get(`http://localhost:8000/api/get-stadiums/`)
@@ -216,42 +232,83 @@ export default function Coach () {
                                 <div className="flex flex-col gap-2">
                                     <h1 className="text-2xl font-bold">Create Squad</h1>
                                     <div className="flex flex-col gap-2">
-                                    <Input className="border" placeholder='Session ID' value={createTabState.session_id} onChange={(e) => setCreateTabState((prev) => {return { ...prev, session_id: e.target.value}})}/>
-                                    <div className='flex flex-row gap-2'>
-                                        <Input className="border" placeholder="Player Name" value={createTabState.nameInputValue} onChange={(e) => setCreateTabState((prev) => {return { ...prev, nameInputValue: e.target.value}})} />
                                         <Select onValueChange={
                                             (value) => {
-                                                setCreateTabState((prev) => {return { ...prev, positionInputValue: parseInt(value)}})
+                                                setCreateTabState((prev) => {return { ...prev, session_id: value[0], team_id: value[1]}})
+                                                axios.post(`http://localhost:8000/api/get-team-players/`, {team_id: value[1]})
+                                                .then(function (response) {
+                                                    setPlayers(response.data.players);
+                                                    console.log(response.data.players);
+                                                })
+                                                .catch(function (error) {
+                                                    console.log(error);
+                                                    setCreateResponseView({status: "error", message: "An error occurred while fetching players!"});
+                                                });
                                             }
                                         
                                         }>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Position" />
+                                                <SelectValue placeholder="Select Session" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {
-                                                    positions.map((position) => (
-                                                        <SelectItem value={position[0]}>{position[1]}</SelectItem>
+                                                    sessions.map((session) => (
+                                                        <SelectItem value={session}>{session[0]}</SelectItem>
                                                     ))
                                                 }
                                             </SelectContent>
                                         </Select>
-                                        <Button onClick={() => {
-                                            setCreateTabState((prev) => {
-                                                return { ...prev, players: [...prev.players, {name: prev.nameInputValue, position: prev.positionInputValue}], nameInputValue: null, positionInputValue: null}
-                                            })
-                                        }}>Add</Button>
+                                        {
+                                            [0,1,2,3,4,5].map((i) => (
+                                                <div key={i} className='flex flex-row gap-2'>
+                                                    <Select onValueChange={
+                                                        (value) => {
+                                                            setCreateTabState((prev) => {return { ...prev, players: prev.players.map((player, index) => index === i ? {username: value, position: player ? player.position : null} : player)}});
+                                                        }
+                                                    
+                                                    } disabled={!createTabState.session_id}>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select Player" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {
+                                                                players.map((player) => (
+                                                                        player
+                                                                        &&
+                                                                        <SelectItem value={player.username}>{player.name + " " + player.surname}</SelectItem>
+                                                                ))
+                                                            }
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <Select onValueChange={
+                                                        (value) => {
+                                                            setCreateTabState((prev) => {return { ...prev, players: prev.players.map((player, index) => index === i ? {username: player ? player.username : null, position: value} : player)}});
+                                                        }
+                                                    
+                                                    } disabled={!createTabState.players[i]}>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select Position" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {
+                                                                createTabState.players[i]
+                                                                &&
+                                                                players.filter((player) => player.username === createTabState.players[i].username)[0].positions.map((position) => (
+                                                                    <SelectItem value={position}>{position}</SelectItem>
+                                                                ))
+                                                            }
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            ))
+                                        }
                                     </div>
-                                    </div>
-                                    <ul className='flex flex-col gap-1'>
-                                        {createTabState.players.map((player) => (
-                                            <li key={player.name}>{player.name + " - " + positions.filter((position) => position[0] === player.position)[0][1]}</li>
-                                        ))}
-                                    </ul>
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/create-squad/`, {session_id: createTabState.session_id, players: createTabState.players, coach_username: user.user[0]})
                                         .then(function (response) {
-                                            setCreateTabState({ players: [], nameInputValue: null, positionInputValue: null, session_id: null});
+                                            setSessions([]);
+                                            setPlayers([]);
+                                            setCreateTabState({ session_id: null, team_id: null, players: [null, null, null, null, null, null] });
                                             setCreateResponseView({status: "success", message: "Squad created successfully!"});
                                         })
                                         .catch(function (error) {
