@@ -313,7 +313,7 @@ export default function Coach () {
                                                                 createTabState.players[i]
                                                                 &&
                                                                 players.filter((player) => player.username === createTabState.players[i].username)[0].positions.map((position) => (
-                                                                    <SelectItem value={position}>{position}</SelectItem>
+                                                                    <SelectItem value={position}>{positions.filter((p) => p[0] == position)[0][1]}</SelectItem>
                                                                 ))
                                                             }
                                                         </SelectContent>

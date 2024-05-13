@@ -160,6 +160,8 @@ def add_match_session(request):
     date = data['date']
     time_slot = data['time_slot']
     assigned_jury_username = data['assigned_jury_username']
+    if not assigned_jury_username:
+        return Response("No jury assigned", status=status.HTTP_400_BAD_REQUEST)
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(session_ID) FROM MatchSession")
     session_id = cursor.fetchone()[0] + 1
@@ -204,6 +206,10 @@ def create_squad(request):
     cursor.execute(f'SELECT * FROM SessionSquads WHERE session_ID = {session_id}')
     if cursor.fetchone():
         return Response("Squad already exists", status=status.HTTP_400_BAD_REQUEST)
+    
+    player_usernames = [player['username'] for player in players]
+    if len(player_usernames) != len(set(player_usernames)):
+        return Response("Duplicate players in squad", status=status.HTTP_400_BAD_REQUEST)
     
     for player in players:
         cursor.execute(f'SELECT * FROM Player WHERE username= "{player["username"].strip()}"')
