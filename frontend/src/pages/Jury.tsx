@@ -8,14 +8,35 @@ import {Input} from '@/components/ui/input'
 import { Button } from "@/components/ui/button"
 import { set } from 'date-fns';
 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+
 export default function Jury() {
     const navigate = useNavigate()
     const { logout, checkAuth, getAuth } = useAuth()
     const isAuth = checkAuth()
 
-    if (!isAuth) return <Navigate to="/" />
-
     const user = getAuth()
+
+    const [sessions, setSessions] = useState([]);
+
+    useEffect(() => {
+        axios.post(`http://localhost:8000/api/get-jury-sessions/`, {jury_username: user.user[0]})
+        .then(function (response) {
+            setSessions(response.data.sessions);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }, []);
+
+
+    if (!isAuth) return <Navigate to="/" />
 
     const [activeTab, setActiveTab] = React.useState('rate')
 
@@ -72,7 +93,23 @@ export default function Jury() {
                             activeTab === 'rate' && (
                                 <div className='flex flex-col gap-2'>
                                     <h1 className="text-2xl font-bold">Rate a Match Session</h1>
-                                    <Input placeholder='Session ID' className='border' value={rateTabState.sessionID} onChange={(e) => setRateTabState((prev) => {return { ...prev, sessionID: e.target.value}})}/>
+                                    <Select onValueChange={
+                                        (value) => {
+                                            setRateTabState((prev) => {return { ...prev, sessionID: value}})
+                                        }
+                                    
+                                    }>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Session ID" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {
+                                                sessions.map((session) => (
+                                                    <SelectItem key={session[0]} value={session[0]}>{session[0]}</SelectItem>
+                                                ))
+                                            }
+                                        </SelectContent>
+                                    </Select>
                                     <Input placeholder='Rating' className='border' value={rateTabState.rating} onChange={(e) => setRateTabState((prev) => {return { ...prev, rating: e.target.value}})}/>
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/rate-match-session/`, {

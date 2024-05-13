@@ -7,6 +7,7 @@ urlpatterns = [
     path('get-positions/', views.get_positions, name='get-positions'),
     path('get-teams/', views.get_teams, name='get-teams'),
     path('get-coach-sessions/', views.get_coach_sessions, name='get-coach-sessions'),
+    path('get-jury-sessions/', views.get_jury_sessions, name='get-jury-sessions'),
     path('get-team-players/', views.get_team_players, name='get-team-players'),
     path('get-stadiums/', views.get_stadiums, name='get-stadiums'),
     path('get-players/', views.get_players, name='get-players'),

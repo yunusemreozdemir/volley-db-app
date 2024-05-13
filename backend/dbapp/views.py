@@ -34,6 +34,16 @@ def get_coach_sessions(request):
     sessions = cursor.fetchall()
     return Response({'sessions': sessions})
 
+
+@api_view(['POST'])
+def get_jury_sessions(request):
+    data = request.data
+    jury_username = data['jury_username']
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT session_ID FROM MatchSession WHERE assigned_jury_username = "{jury_username}" AND rating IS NULL')
+    sessions = cursor.fetchall()
+    return Response({'sessions': sessions})
+
 @api_view(['POST'])
 def get_team_players(request):
     data = request.data
