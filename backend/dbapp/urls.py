@@ -6,6 +6,7 @@ urlpatterns = [
     path('create-user/', views.create_user, name='create-user'),
     path('get-positions/', views.get_positions, name='get-positions'),
     path('get-teams/', views.get_teams, name='get-teams'),
+    path('get-juries/', views.get_juries, name='get-juries'),
     path('get-coach-sessions/', views.get_coach_sessions, name='get-coach-sessions'),
     path('get-jury-sessions/', views.get_jury_sessions, name='get-jury-sessions'),
     path('get-team-players/', views.get_team_players, name='get-team-players'),

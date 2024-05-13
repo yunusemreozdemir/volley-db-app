@@ -46,12 +46,20 @@ export default function Coach () {
     const user = getAuth()
 
     const [positions, setPositions] = useState([])
+    const [juries, setJuries] = useState([])
     
 
     useEffect(() => {
         axios.get(`http://localhost:8000/api/get-positions/`)
         .then(function (response) {
             setPositions(response.data.positions)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        axios.get(`http://localhost:8000/api/get-juries/`)
+        .then(function (response) {
+            setJuries(response.data.juries)
         })
         .catch(function (error) {
             console.log(error);
@@ -84,7 +92,7 @@ export default function Coach () {
     const [sessions, setSessions] = React.useState([])
     const [players, setPlayers] = React.useState([])
 
-    const [addTabState, setAddTabState] = React.useState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_name: null, assigned_jury_surname: null})
+    const [addTabState, setAddTabState] = React.useState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_username: null})
     const [deleteTabState, setDeleteTabState] = React.useState(null)
     const [createTabState, setCreateTabState] = React.useState({ session_id: null, team_id: null, players: [null, null, null, null, null, null] })
     const [viewTabState, setViewTabState] = React.useState([])
@@ -180,10 +188,23 @@ export default function Coach () {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="flex flex-row gap-2">
-                                        <Input placeholder='Jury Name' className='border' value={addTabState.assigned_jury_name} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_name: e.target.value}})}/>
-                                        <Input placeholder='Jury Surname' className='border' value={addTabState.assigned_jury_surname} onChange={(e) => setAddTabState((prev) => {return { ...prev, assigned_jury_surname: e.target.value}})}/>
-                                    </div>
+                                    <Select onValueChange={
+                                        (value) => {
+                                            setAddTabState((prev) => {return { ...prev, assigned_jury_username: value}})
+                                        }
+                                    
+                                    }>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Assigned Jury" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {
+                                                juries.map((jury) => (
+                                                    <SelectItem value={jury[0]}>{jury[1] + " " + jury[2]}</SelectItem>
+                                                ))
+                                            }
+                                        </SelectContent>
+                                    </Select>
                                     <Button onClick={() => {
                                         axios.post(`http://localhost:8000/api/add-match-session/`, {
                                             ...addTabState,
@@ -191,7 +212,7 @@ export default function Coach () {
                                         
                                         })
                                         .then(function (response) {
-                                            setAddTabState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_name: null, assigned_jury_surname: null});
+                                            setAddTabState({stadium_name: null, stadium_country: null, date: null, time_slot: null, assigned_jury_username: null});
                                             setAddResponseView({status: "success", message: "Match session added successfully!"});
                                         })
                                         .catch(function (error) {

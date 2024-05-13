@@ -244,7 +244,7 @@ export default function DBManager () {
                             () => {
                                 axios.post(`http://localhost:8000/api/create-user/`, {...createData, usertype: activeTab})
                                 .then(function (response) {
-                                    setCreateData({username: null, password: null, name: null, surname: null, date_of_birth: null, height: null, weight: null, team_ids: [], position_ids: [], nationality: null});
+                                    setCreateData((prev) => {return {username: null, password: null, name: null, surname: null, date_of_birth: null, height: null, weight: null, team_ids: [], position_ids: [], nationality: null}});
                                     setCreateResponseView({status: "success", message: "User created successfully!"});
                                 })
                                 .catch(function (error) {

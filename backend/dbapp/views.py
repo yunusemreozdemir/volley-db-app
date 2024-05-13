@@ -24,6 +24,13 @@ def get_teams(request):
     teams = cursor.fetchall()
     return Response({'teams': teams})
 
+@api_view(['GET'])
+def get_juries(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT username, name, surname FROM Jury")
+    juries = cursor.fetchall()
+    return Response({'juries': juries})
+
 
 @api_view(['POST'])
 def get_coach_sessions(request):
@@ -152,8 +159,7 @@ def add_match_session(request):
     stadium_country = data['stadium_country']
     date = data['date']
     time_slot = data['time_slot']
-    assigned_jury_name = data['assigned_jury_name']
-    assigned_jury_surname = data['assigned_jury_surname']
+    assigned_jury_username = data['assigned_jury_username']
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(session_ID) FROM MatchSession")
     session_id = cursor.fetchone()[0] + 1
@@ -166,11 +172,6 @@ def add_match_session(request):
         stadium_id = stadium[0]
     cursor.execute(f'SELECT team_ID FROM Team WHERE coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{date}", "%d.%m.%Y")')
     team_id = cursor.fetchone()[0]
-    cursor.execute(f'SELECT * FROM Jury WHERE name = "{assigned_jury_name}" AND surname = "{assigned_jury_surname}"')
-    jury = cursor.fetchone()
-    if jury[0] == 0:
-        return Response("Jury not found", status=status.HTTP_404_NOT_FOUND)
-    assigned_jury_username = jury[0]
     cursor.execute(f'INSERT INTO MatchSession (session_ID, team_ID, stadium_ID, stadium_name, stadium_country, time_slot, date, assigned_jury_username, rating) VALUES ({session_id}, {team_id}, {stadium_id}, "{stadium_name}", "{stadium_country}", {time_slot}, "{date}", "{assigned_jury_username}", NULL)')
     return Response("Match session added", status=status.HTTP_200_OK)
 
