@@ -11,7 +11,7 @@ BEGIN
     FROM Team
     WHERE team_ID = NEW.team;
 
-    IF team_count = 0 THEN
+    IF m_count = 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Team does not exist!';
     END IF;

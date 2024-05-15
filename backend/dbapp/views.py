@@ -74,6 +74,8 @@ def create_user(request):
     password = data['password']
     name = data['name']
     surname = data['surname']
+    if username == "" or password == "" or name == "" or surname == "":
+        return Response({'error': 'Empty fields'}, status=status.HTTP_400_BAD_REQUEST)
     cursor = connection.cursor()
     for user_type in ['DBManager', 'Player', 'Coach', 'Jury']:
         user = cursor.execute("SELECT * FROM " + user_type + " WHERE username = %s", [username])
@@ -86,6 +88,10 @@ def create_user(request):
         weight = data['weight']
         team_ids = data['team_ids']
         position_ids = data['position_ids']
+
+        if date_of_birth == "" or height == "" or weight == "" or team_ids == [] or position_ids == []:
+            return Response({'error': 'Empty fields'}, status=status.HTTP_400_BAD_REQUEST)
+        
         cursor.execute("INSERT INTO Player (username, password, name, surname, date_of_birth, height, weight) VALUES (%s, %s, %s, %s, %s, %s, %s)", [username, password, name, surname, date_of_birth, height, weight])
         for team_id in set(team_ids):
             cursor.execute("SELECT MAX(player_teams_id) FROM PlayerTeams")
@@ -98,10 +104,15 @@ def create_user(request):
 
     elif usertype == "Coach":
         nationality = data['nationality']
+        if nationality == "":
+            return Response({'error': 'Empty fields'}, status=status.HTTP_400_BAD_REQUEST)
+
         cursor.execute("INSERT INTO Coach (username, password, name, surname,  nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
         
     elif usertype == "Jury":
         nationality = data['nationality']
+        if nationality == "":
+            return Response({'error': 'Empty fields'}, status=status.HTTP_400_BAD_REQUEST)
         cursor.execute("INSERT INTO Jury (username, password, name, surname, nationality) VALUES (%s, %s, %s, %s, %s)", [username, password, name, surname, nationality])
     else:
         return Response({'error': 'Invalid user type'}, status=status.HTTP_400_BAD_REQUEST)
@@ -128,6 +139,8 @@ def update_stadium(request):
     data = request.data
     previous_id = data['previous_id']
     name = data['name']
+    if not name or not previous_id:
+        return Response("Empty fields", status=status.HTTP_400_BAD_REQUEST)
     cursor = connection.cursor()
     cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_ID = %s", [name, previous_id])
     print(cursor.rowcount)
@@ -145,6 +158,8 @@ def delete_match_session(request):
     cursor = connection.cursor()
     try:
         session_ID = request.data['session_ID']
+        if not session_ID:
+            return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
         cursor.execute("DELETE FROM MatchSession WHERE session_ID = %s", [session_ID])
         cursor.execute("DELETE FROM SessionSquads WHERE session_ID = %s", [session_ID])
         return Response("Match session deleted", status=status.HTTP_200_OK)
