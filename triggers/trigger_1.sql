@@ -12,7 +12,7 @@ BEGIN
     FROM MatchSession
     WHERE (time_slot = NEW.time_slot OR
     time_slot = NEW.time_slot + 1 OR
-    time_slot - 1 = NEW.time_slot) AND
+    time_slot = NEW.time_slot - 1) AND
     stadium_ID = NEW.stadium_ID AND 
     date = NEW.date;
     

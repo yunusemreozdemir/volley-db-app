@@ -173,7 +173,10 @@ def add_match_session(request):
     else:
         stadium_id = stadium[0]
     cursor.execute(f'SELECT team_ID FROM Team WHERE coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{date}", "%d.%m.%Y")')
-    team_id = cursor.fetchone()[0]
+    team_id = cursor.fetchone()
+    if not team_id:
+        return Response("Coach team mismatch", status=status.HTTP_400_BAD_REQUEST)
+    team_id = team_id[0]
     cursor.execute(f'INSERT INTO MatchSession (session_ID, team_ID, stadium_ID, stadium_name, stadium_country, time_slot, date, assigned_jury_username, rating) VALUES ({session_id}, {team_id}, {stadium_id}, "{stadium_name}", "{stadium_country}", {time_slot}, "{date}", "{assigned_jury_username}", NULL)')
     return Response("Match session added", status=status.HTTP_200_OK)
 
