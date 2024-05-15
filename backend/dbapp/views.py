@@ -168,8 +168,7 @@ def add_match_session(request):
     cursor.execute("SELECT DISTINCT stadium_ID FROM MatchSession WHERE stadium_name = %s AND stadium_country = %s" , [stadium_name, stadium_country])
     stadium = cursor.fetchone()
     if not stadium:
-        cursor.execute("SELECT MAX(stadium_ID) FROM MatchSession")
-        stadium_id = cursor.fetchone()[0] + 1
+        return Response("Stadium not found", status=status.HTTP_404_NOT_FOUND)
     else:
         stadium_id = stadium[0]
     cursor.execute(f'SELECT team_ID FROM Team WHERE coach_username = "{coach_username}" AND STR_TO_DATE(contract_start, "%d.%m.%Y") <= STR_TO_DATE("{date}", "%d.%m.%Y") AND STR_TO_DATE(contract_finish, "%d.%m.%Y") > STR_TO_DATE("{date}", "%d.%m.%Y")')
