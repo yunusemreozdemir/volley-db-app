@@ -139,7 +139,7 @@ def update_stadium(request):
     data = request.data
     previous_id = data['previous_id']
     name = data['name']
-    if not name or not previous_id:
+    if not name or (not previous_id and previous_id != 0):
         return Response("Empty fields", status=status.HTTP_400_BAD_REQUEST)
     cursor = connection.cursor()
     cursor.execute("UPDATE MatchSession SET stadium_name = %s WHERE stadium_ID = %s", [name, previous_id])
@@ -158,7 +158,7 @@ def delete_match_session(request):
     cursor = connection.cursor()
     try:
         session_ID = request.data['session_ID']
-        if not session_ID:
+        if not session_ID and session_ID != 0:
             return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
         cursor.execute("DELETE FROM MatchSession WHERE session_ID = %s", [session_ID])
         cursor.execute("DELETE FROM SessionSquads WHERE session_ID = %s", [session_ID])
@@ -202,7 +202,7 @@ def create_squad(request):
     if not coach_username:
         return Response("No coach username provided", status=status.HTTP_400_BAD_REQUEST)
     session_id = data['session_id']
-    if not session_id:
+    if not session_id and session_id != 0:
         return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
     players = data['players']
     if not players:
@@ -268,7 +268,7 @@ def view_rating_stats(request):
 def rate_match_session(request):
     data = request.data
     session_id = data['session_id']
-    if not session_id:
+    if not session_id and session_id != 0:
         return Response("No session ID provided", status=status.HTTP_400_BAD_REQUEST)
     rating = data['rating']
     if (not rating and rating != 0):
